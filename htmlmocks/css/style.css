@@ -1,0 +1,55 @@
+body {
+	margin:0px;
+	font-family:"Open Sans";
+}
+
+#body_table {
+	width:100%;
+	height:100%;
+	border-spacing: 0px
+}
+
+#left_panel {
+	width: 25%;
+}
+
+.left_section {
+	max-height:50%;
+	position:relative;
+	overflow:auto;
+}
+
+.ticket_box {
+	height:100px;
+	border: 2px solid rgb(233, 233, 233);
+	background-color: #EDFDFF;
+	float: left;
+	width: 100%;
+}
+
+.profilepic_small {
+	height: 60%;
+}
+
+.ticket_left_half {
+	float:left;
+	padding: 15px;
+	text-align: center;
+}
+
+.ticket_right_half {
+	left:20px;
+	padding:60px;
+	font-size:14px;
+	position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+
+#right_panel {
+	width:100%;
+}
+
