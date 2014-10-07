@@ -71,8 +71,55 @@ body {
 	margin-top:-30%;
 }
 
-
 #right_panel {
 	width:100%;
 }
 
+#right_panel_content {
+	text-align: center;
+	overflow: auto;
+	position: relative;
+	max-height: 100%;
+}
+
+.profilepic_big {
+	margin-top:10%;
+}
+
+#email_img {
+	height:45px;
+}
+
+#short_description {
+	width:50%;
+	margin:auto;
+}
+#long_description {
+	margin:auto;
+	width: 65%;
+	font-size: 13px;
+}
+
+.ticket_comment {
+	background-color: rgb(233, 233, 233);
+	border:none;
+	resize:none;
+	border-radius:25px;
+	width:47%;
+	outline:0px;
+	min-height:47px;
+	text-align: center;
+	padding:20px;
+}
+.ticket_submit {
+	border: 2px solid rgb(233, 233, 233);
+	background-color: #EDFDFF;
+	width: 10%;
+	height: 25px;
+	border-radius: 15px;
+	color: gray;
+}
+
+.ticket_submit:focus {
+	outline:0;
+}
