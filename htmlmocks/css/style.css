@@ -85,7 +85,7 @@ float:left;
 }
 
 .ticket_box {
-	height:100px;
+	height:75px;
 	background: #EDFDFF;
 	float: left;
 	width: 100%;
@@ -94,7 +94,7 @@ float:left;
 }
 
 .profilepic_small {
-	height: 60%;
+	height: 75%;
 }
 
 .ticket_left_half {
@@ -104,23 +104,35 @@ float:left;
 }
 
 .ticket_description {
-	margin-left:65px;
+	margin:11px 0px 0px 65px;
 	padding-right:75px;
-	font-size:14px;
-	position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+	font-size:15px;
+	min-width: 305px;
 }
 
 .ticket_rightview {
-	float:right;
-	text-align: center;
+	text-align: right;
 }
+
+.num_comments {
+	right: 31px;
+	top: -34px;
+	font-size: 14px;
+	position: relative;
+	color: rgb(99, 99, 99);
+}
+
+.tags {
+	color:rgb(110,110,110);
+	font-size:14px;
+	position:relative;
+	top:1px;
+}
+
 .speechbubble {
-	height:80px;
-	margin-top:-30%;
+	height: 33px;
+	margin-right: 18px;
+	margin-top: -41px;
 }
 
 #right_panel {
