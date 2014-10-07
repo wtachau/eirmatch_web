@@ -12,6 +12,7 @@ body {
 #left_panel {
 	min-width: 400px;
 	width: 35%;
+	padding: 0px
 }
 
 .left_section {
@@ -36,7 +37,7 @@ body {
 .ticket_box {
 	height:100px;
 	border-bottom: 2px solid rgb(233, 233, 233);
-	background-color: #EDFDFF;
+	background: #EDFDFF;
 	float: left;
 	width: 100%;
 }
@@ -74,5 +75,17 @@ body {
 
 #right_panel {
 	width:100%;
+	background: url(../img/background.jpg);
+}
+
+/* Fade */
+.fade {
+   transition: background .25s ease-in-out;
+   -moz-transition: background .25s ease-in-out;
+   -webkit-transition: background .25s ease-in-out;
+}
+
+.fade:hover {
+  background: #fff;
 }
 
