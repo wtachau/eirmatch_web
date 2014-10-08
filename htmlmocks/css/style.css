@@ -152,8 +152,14 @@ float:left;
 	width:60%;
 	margin: 80px auto 40px auto;
 	border-radius:25px;
-	background-color:rgba(255,255,255,.75);
-	padding:47px 50px 7px 50px
+	background:rgba(255,255,255,.75);
+	padding:47px 50px 7px 50px;
+	transition: background .25s ease-in-out;
+   -moz-transition: background .25s ease-in-out;
+   -webkit-transition: background .25s ease-in-out;
+}
+#right_panel_content:hover {
+background:rgba(255,255,255,1);
 }
 
 #email_img {
