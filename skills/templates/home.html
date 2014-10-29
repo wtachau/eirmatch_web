@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  {% include "header.html" %}
+  <title>skills@originate</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    function signinCallback(authResult) {
+      if (authResult['status']['signed_in']) {
+        console.log(authResult);
+        if (authResult['hd'] != "originate.com") {
+          console.log ("you fail!");
+          disconnectUser(authResult['access_token']);
+        } else {
+        document.getElementById('signinButton').setAttribute('style', 'display: none');
+        }
+      } else {
+        // Update the app to reflect a signed out user
+        // Possible error values:
+        //   "user_signed_out" - User is signed-out
+        //   "access_denied" - User denied access to your app
+        //   "immediate_failed" - Could not automatically log in the user
+        console.log('Sign-in state: ' + authResult['error']);
+      }
+    }
+    function disconnectUser(access_token) {
+      var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' +
+          access_token;
+
+      // Perform an asynchronous GET request.
+      $.ajax({
+        type: 'GET',
+        url: revokeUrl,
+        async: false,
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: function(nullResponse) {
+          // Do something now that user is disconnected
+          // The response is always undefined.
+          console.log("disconnected successfully");
+        },
+        error: function(e) {
+          // Handle the error
+          console.log("Error disconnecting:"+e);
+          // You could point users to manually disconnect if unsuccessful
+          // https://plus.google.com/apps
+        }
+      });
+    }
+  </script>
+  </head>
+  <body>
+    <div id="center_pane">
+      login below
+      <br>
+      <span id="signinButton">
+        <span
+          class="g-signin"
+          data-callback="signinCallback"
+          data-clientid="1058509999201-n23gtmm967b4itcgdnjplr22l7ve7qb7.apps.googleusercontent.com"
+          data-cookiepolicy="single_host_origin"
+          data-requestvisibleactions=""
+          data-scope="openid email">
+        </span>
+      </span>
+    </div>
+
+    <!-- Place this asynchronous JavaScript just before your </body> tag -->
+      <script type="text/javascript">
+        (function() {
+         var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+         po.src = 'https://apis.google.com/js/client:plusone.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+       })();
+
+
+      </script>
+  </body>
+</hmtl>
