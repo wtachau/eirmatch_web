@@ -25,7 +25,7 @@ DEBUG = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['54.201.253.206']
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
