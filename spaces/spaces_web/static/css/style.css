@@ -1,0 +1,302 @@
+body {
+	margin:0px;
+	font-family:"Lato";
+}
+
+/* HEADER */
+
+#header {
+	height:80px;
+	background: black;
+	font-family: "lato";
+	color:white;
+	text-align: center;
+}
+
+#logo_full {
+padding-top: 3px;
+margin-left:-200px;
+left:50%;
+position:relative;
+float:left;
+}
+
+#logo_1 {
+	font-size: 47px;
+	top: -2px;
+	font-weight: 100;
+	position: relative;
+}
+#logo_2 {
+	color:rgb(115,210,226);
+	font-size: 60PX;
+	font-weight: 900;
+}
+
+.upper_right {
+	float:right;
+	padding:5px;
+    cursor: pointer;
+}
+.upper_right img{
+	height:85%;
+}
+.upper_right#profile {
+	margin-right:20px;
+}
+
+/* LEFT SECTION */ 
+
+#body_table {
+	width:100%;
+	height:calc(100% - (126px));
+	border-spacing: 0px
+}
+
+#left_panel {
+	min-width: 400px;
+	width: 35%;
+	padding: 0px
+}
+
+.left_section {
+	max-height:calc(50% - 30px);
+	position:relative;
+	overflow:auto;
+}
+
+.section_header {
+	height:30px;
+	min-height: 25px;
+	position:relative;
+	text-align: center;
+}
+.section_header div {
+	position: relative;
+	top: 6%;
+	font-weight: 300;
+	font-size: 21px;
+}
+
+.skills {
+	background-color: rgb(25,232,141);
+}
+.all {
+	background-color: rgb(115,210,226);;
+}
+
+.ticket_box {
+	height:75px;
+	background: #EDFDFF;
+	float: left;
+	width: 100%;
+	border-radius: 15px;
+	margin-bottom: 6px;
+	cursor:pointer;
+}
+
+.profilepic_small {
+	height: 75%;
+}
+
+.ticket_left_half {
+	float:left;
+	padding: 11px 13px 0px 12px;
+	text-align: center;
+}
+
+.ticket_description {
+	margin:11px 0px 0px 65px;
+	padding-right:75px;
+	font-size:13px;
+	min-width: 305px;
+}
+
+.ticket_rightview {
+	text-align: right;
+}
+
+.num_comments {
+	right: 31px;
+	top: -34px;
+	font-size: 14px;
+	position: relative;
+	color: rgb(99, 99, 99);
+}
+
+.tags {
+	color:rgb(110,110,110);
+	font-size:14px;
+	position:relative;
+	top:1px;
+}
+
+.speechbubble {
+	height: 33px;
+	margin-right: 18px;
+	margin-top: -41px;
+}
+
+#right_panel {
+	width:100%;
+	background: url(../img/background.jpg);
+}
+
+#right_panel_fixed_height {
+	max-height: 100%;
+	position: relative;
+	overflow:auto;
+}
+
+#right_panel_content {
+	text-align: center;
+	position: relative;
+	width:60%;
+	margin: 80px auto 40px auto;
+	border-radius:25px;
+	background:rgba(255,255,255,.75);
+	padding:47px 50px 7px 50px;
+	transition: background .25s ease-in-out;
+   -moz-transition: background .25s ease-in-out;
+   -webkit-transition: background .25s ease-in-out;
+}
+#right_panel_content:hover {
+background:rgba(255,255,255,1);
+}
+
+#email_img {
+	height:45px;
+}
+
+#short_description {
+	font-size: 20px;
+	padding:15px;
+}
+#long_description {
+	font-size: 13px;
+	padding:15px;
+}
+
+.ticket_comment {
+	background-color: rgb(233, 233, 233);
+	border:none;
+	resize:none;
+	width:95%;
+	border-radius:25px;
+	outline:0px;
+	min-height:47px;
+	text-align: center;
+	padding:20px;
+}
+.ticket_submit {
+	border: 2px solid rgb(233, 233, 233);
+	background-color: #EDFDFF;
+	width: 20%;
+	height: 25px;
+	border-radius: 15px;
+	color: gray;
+}
+
+.ticket_submit:focus {
+	outline:0;
+}
+
+/* Footer */
+#footer {
+	background-color:black;
+	height:30px;
+	text-align: center;
+	padding:8px;
+	font-family: "Lato"
+}
+#footer a{
+	color: white;
+	text-decoration: none;
+	font-weight:300;
+}
+#footer a:hover {
+	text-decoration: underline;
+}
+
+/* Popup */
+
+#backgroundPopup {
+    z-index:1;
+    position: fixed;
+    display:none;
+    height:100%;
+    width:100%;
+    background:#000000;
+    top:0px;
+    left:0px;
+}
+.popup {
+    font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 10px solid #ccc;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: none;
+    font-size: 14px;
+    left: 50%;
+    margin-left: -25%;
+    position: fixed;
+    top: 20%;
+    width: 50%;
+    z-index: 2;
+}
+/*div.loader {
+    background: url("../img/loading.gif") no-repeat scroll 0 0 transparent;
+    height: 32px;
+    width: 32px;
+    display: none;
+    z-index: 9999;
+    top: 40%;
+    left: 50%;
+    position: absolute;
+    margin-left: -10px;
+}*/
+#postPopupContent {
+    margin: 4px 7px;
+    text-align:center;
+    /* remove this comment if you want scroll bar
+    overflow-y:scroll;
+    height:200px
+    */
+}
+#postPopupContent textarea[name="short"] {
+	width: 39%;
+	height: 50px;
+}
+#postPopupContent textarea[name="long"] {
+	width: 39%;
+	height: 100px;
+}
+
+/* Login */
+/*#center_pane {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	margin-top: 255px;
+}*/
+
+/* Fade and other useful snippets*/
+.fade {
+   transition: background .25s ease-in-out;
+   -moz-transition: background .25s ease-in-out;
+   -webkit-transition: background .25s ease-in-out;
+}
+
+.fade:hover {
+  background: #fff;
+}
+
+.nonresize {
+	resize:none;
+}
+
+
+
+
