@@ -82,4 +82,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+if not DEBUG:
+    STATIC_URL = 'https://s3-us-west-1.amazonaws.com/spacesresources/'
 
