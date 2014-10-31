@@ -10,24 +10,25 @@ def login(request):
 
 def tryLogin(request):
 	data = request.POST
-	userID = data['id']
+	googleID = data['id']
 	response = HttpResponse("success")
 	try:
-		existingUser = User.objects.get(googleID=userID)
-		response.set_cookie('id', existingUser.id)
+		existingUser = User.objects.get(googleID=googleID)
+		response.set_cookie('id', existingUser.googleID)
 	except User.DoesNotExist:
 		email = data['emails[0][value]']
 		name = data['displayName']
 		image = data['result[image][url]']
 		newUser = User(name=name, email=email, googleID=userID, image=image)
 		newUser.save()
-		response.set_cookie('id', newUser.id)
+		response.set_cookie('id', newUser.googleID)
 	return response
 
 def home(request):
 	context = {}
 	try:
-		loggedInUser = User.objects.get(id=request.COOKIES['id'])
+		googleID = int(request.COOKIES['id'])		
+		loggedInUser = User.objects.get(googleID=googleID)
 		context['user'] = loggedInUser
 		# get relevant posts and most recent
 		relevant_posts = Post.objects.all() # eventually something about user here
@@ -36,7 +37,8 @@ def home(request):
 		context['relevant_posts'] = relevant_posts
 		context.update(csrf(request))
 		return render(request, 'index.html', context)
-	except:
+	except Exception as e:
+		print "Exception: %s" % e
 		return login(request)
 
 def addPost(request):
