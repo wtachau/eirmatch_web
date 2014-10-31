@@ -20,3 +20,12 @@ class Post(models.Model):
 
 	def __str__(self):
 		return self.short_description
+
+class User(models.Model):
+	name = models.CharField(max_length=255)
+	email = models.CharField(max_length=255)
+	googleID = models.CharField(max_length=255)
+	image = models.CharField(max_length=255)
+
+	def __str__(self):
+		return self.name

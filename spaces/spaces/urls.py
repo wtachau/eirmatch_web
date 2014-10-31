@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, include, url
-
 from django.contrib import admin
 admin.autodiscover()
 
@@ -14,6 +13,7 @@ urlpatterns = patterns('',
 
     # ajax responses
     url(r'^addPost$', views.addPost, name="addPost"),
+    url(r'^tryLogin$', views.tryLogin, name="tryLogin"),
 
     # admin page
     url(r'^admin/', include(admin.site.urls)),

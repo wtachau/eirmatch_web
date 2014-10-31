@@ -3,48 +3,57 @@
 <html>
   <head>
   <title>spaces</title>
+  <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900' rel='stylesheet' type='text/css'>
   <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script type="text/javascript">
 
     function signinCallback(authResult) {
-      if (authResult['status']['signed_in']) {
 
-
-
-
-
-        document.getElementById("results").innerHTML=JSON.stringify(authResult);
-gapi.client.load('plus','v1', function(){
- var request = gapi.client.plus.people.get({
-   'userId': 'me'
- });
- request.execute(function(resp) {
-
-          document.getElementById("results2").innerHTML=JSON.stringify(resp);
-
-   console.log('Retrieved profile for:' + resp.displayName);
- });
-});
-
-
-
-
-        if (authResult['hd'] != "originate.com") {
-          console.log ("you fail!");
-          disconnectUser(authResult['access_token']);
-        } else {
-          //document.location="/";
-         document.getElementById('signinButton').setAttribute('style', 'display: none');
-        }
+      if (authResult['hd'] != "originate.com") {
+        console.log ("you fail!");
+        disconnectUser(authResult['access_token']);
       } else {
-        // Update the app to reflect a signed out user
-        // Possible error values:
-        //   "user_signed_out" - User is signed-out
-        //   "access_denied" - User denied access to your app
-        //   "immediate_failed" - Could not automatically log in the user
-        console.log('Sign-in state: ' + authResult['error']);
+
+        if (authResult['status']['signed_in']) {
+          
+          // get user information
+          gapi.client.load('plus','v1', function(){
+            var request = gapi.client.plus.people.get({
+              'userId': 'me'
+            });
+            request.execute(function(resp) {
+
+              // add csrf token to dictionary
+              var dict = resp;
+              dict['csrfmiddlewaretoken'] = '{{ csrf_token }}';
+
+              // and send request to login
+              $.ajax(
+              {
+                  url : "tryLogin",
+                  type: "POST",
+                  data : dict,
+                  success:function(data, textStatus, jqXHR) 
+                  {
+                    document.location="/";
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) 
+                  {
+                    alert("Error! Failed login");    
+                  }
+                });
+              });
+            });
+        } else {
+          // Update the app to reflect a signed out user
+          // Possible error values:
+          //   "user_signed_out" - User is signed-out
+          //   "access_denied" - User denied access to your app
+          //   "immediate_failed" - Could not automatically log in the user
+          console.log('Sign-in state: ' + authResult['error']);
+        }
       }
     }
 
@@ -74,10 +83,10 @@ gapi.client.load('plus','v1', function(){
     }
   </script>
   </head>
-  <body>
+  <body class="login">
     <div id="center_pane">
-      login below
-      <br>
+      login to Originate Spaces below
+      <br><br>
       <span id="signinButton">
         <span
           class="g-signin"
