@@ -45,6 +45,11 @@ jQuery(function($) {
 	    e.preventDefault(); //STOP default action
 	});
 
+	$("#logout").click(function() {
+		console.log("here");
+		gapi.auth.signOut();
+		document.location="/login";
+	});
 	
 
 	/* Functions to actually show or hide */
