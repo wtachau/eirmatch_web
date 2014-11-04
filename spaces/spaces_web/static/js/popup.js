@@ -46,14 +46,12 @@ jQuery(function($) {
 	});
 
 	$("#logout").click(function() {
-		console.log("here");
 		gapi.auth.signOut();
-		document.location="/login";
+	    document.location="/logout";
 	});
 	
 
 	/* Functions to actually show or hide */
-	
 
 	/*
 	 * for now, loading disabled

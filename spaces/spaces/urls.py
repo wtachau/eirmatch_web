@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.home, name="home"),
     url(r'^login$', views.login, name="login"),
+    url(r'^logout$', views.logout, name="logout"),
 
     # ajax responses
     url(r'^addPost$', views.addPost, name="addPost"),

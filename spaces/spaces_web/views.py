@@ -1,12 +1,17 @@
 from django.shortcuts import render
 from django.core.context_processors import csrf
 from spaces_web.models import Post, Comment, User
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 def login(request):
 	context = {}
 	context.update(csrf(request))
 	return render(request, 'login.html', context)
+
+def logout(request):
+	response = HttpResponseRedirect("login")
+	response.delete_cookie('id')
+	return response
 
 def tryLogin(request):
 	data = request.POST
@@ -37,7 +42,7 @@ def home(request):
 		context.update(csrf(request))
 		return render(request, 'index.html', context)
 	except:
-		return login(request)
+		return HttpResponseRedirect("login")
 
 def addPost(request):
 	data = request.POST
