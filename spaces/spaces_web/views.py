@@ -24,9 +24,11 @@ def tryLogin(request):
 		email = data['emails[0][value]']
 		name = data['displayName']
 		image = data['result[image][url]']
-		newUser = User(name=name, email=email, googleID=userID, image=image)
+		newUser = User(name=name, email=email, googleID=googleID, image=image)
 		newUser.save()
 		response.set_cookie('id', newUser.googleID)
+	except Exception as e:
+		print "Exception: %s" % e
 	return response
 
 def home(request):
