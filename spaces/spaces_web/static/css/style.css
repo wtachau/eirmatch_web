@@ -14,11 +14,11 @@ body {
 }
 
 #logo_full {
-padding-top: 3px;
-margin-left:-200px;
-left:50%;
-position:relative;
-float:left;
+	padding-top: 3px;
+	margin-left:-200px;
+	left:50%;
+	position:relative;
+	float:left;
 }
 
 #logo_1 {
@@ -96,12 +96,13 @@ float:left;
 }
 
 .profilepic_small {
-	height: 75%;
+	height: 60px;
+	border-radius:30px;
 }
 
 .ticket_left_half {
 	float:left;
-	padding: 11px 13px 0px 12px;
+	padding: 6px;
 	text-align: center;
 }
 
@@ -117,10 +118,10 @@ float:left;
 }
 
 .num_comments {
-	right: 31px;
-	top: -34px;
+	top: -26px;
 	font-size: 14px;
 	position: relative;
+	text-align: center;
 	color: rgb(99, 99, 99);
 }
 
@@ -133,8 +134,7 @@ float:left;
 
 .speechbubble {
 	height: 33px;
-	margin-right: 18px;
-	margin-top: -41px;
+	margin-top:15px;
 }
 
 #right_panel {
@@ -162,6 +162,11 @@ float:left;
 }
 #right_panel_content:hover {
 background:rgba(255,255,255,1);
+}
+
+#profilepic_big {
+	height:200px;
+	border-radius:100px;
 }
 
 #email_img {
@@ -209,7 +214,7 @@ background:rgba(255,255,255,1);
 	padding:8px;
 	font-family: "Lato"
 }
-#footer a{
+#footer a {
 	color: white;
 	text-decoration: none;
 	font-weight:300;
@@ -245,6 +250,22 @@ background:rgba(255,255,255,1);
     width: 50%;
     z-index: 2;
 }
+#tag-selector-wrapper {
+	width:40%;
+	margin:auto;
+}
+#short_description_popup {
+	border-radius: 5px;
+}
+#short_description_popup:focus {
+	outline:none;
+}
+#long_description_popup {
+	border-radius: 5px;
+}
+#long_description_popup:focus {
+	outline:none;
+}
 /*div.loader {
     background: url("../img/loading.gif") no-repeat scroll 0 0 transparent;
     height: 32px;
@@ -259,10 +280,6 @@ background:rgba(255,255,255,1);
 #postPopupContent {
     margin: 4px 7px;
     text-align:center;
-    /* remove this comment if you want scroll bar
-    overflow-y:scroll;
-    height:200px
-    */
 }
 #postPopupContent textarea[name="short"] {
 	width: 39%;

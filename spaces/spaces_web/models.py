@@ -1,25 +1,12 @@
 from django.db import models
-from djangotoolbox.fields import ListField
-from .forms import StringListField
+from djangotoolbox.fields import EmbeddedModelField, ListField, DictField
 
-class StringField(ListField):
-    def formfield(self, **kwargs):
-        return models.Field.formfield(self, StringListField, **kwargs)
-
-class Comment(models.Model):
-    text = models.TextField()  
-    def __str__(self):
-		return self.text
-
-class Post(models.Model):
-	short_description = models.TextField()
-	long_description = models.TextField()
-	tags = ListField(models.CharField())
-	comments = ListField(models.ForeignKey(Comment))
-	active = models.BooleanField(default=True)
+class Tag(models.Model):
+	name = models.CharField(max_length=255)
+	times_used = models.IntegerField(null=True, default=1)
 
 	def __str__(self):
-		return self.short_description
+		return self.name
 
 class User(models.Model):
 	name = models.CharField(max_length=255)
@@ -29,3 +16,19 @@ class User(models.Model):
 
 	def __str__(self):
 		return self.name
+
+class Comment(models.Model):
+	text = models.TextField()
+	def __str__(self):
+		return self.text
+
+class Post(models.Model):
+	poster = models.ForeignKey(User)
+	short_description = models.TextField()
+	long_description = models.TextField()
+	tags = ListField(models.CharField(max_length=255))
+	comments = ListField(models.ForeignKey(Comment))
+	active = models.BooleanField(default=True)
+
+	def __str__(self):
+		return self.short_description

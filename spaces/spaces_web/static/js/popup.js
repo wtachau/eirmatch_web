@@ -34,7 +34,7 @@ jQuery(function($) {
 	        data : postData,
 	        success:function(data, textStatus, jqXHR) 
 	        {
-	            console.log(data+"saved");
+	            console.log(data);
 	            disablePopup();
 	        },
 	        error: function(jqXHR, textStatus, errorThrown) 
@@ -51,17 +51,7 @@ jQuery(function($) {
 	});
 	
 
-	/* Functions to actually show or hide */
-
-	/*
-	 * for now, loading disabled
-	 *
-	function loading() {
-		$("div.loader").show();  
-	}
-	function closeloading() {
-		$("div.loader").fadeOut('normal');  
-	}*/
+	/* Functions to actually show or hide popup */
 	
 	var popupStatus = 0;
 	
@@ -93,5 +83,6 @@ jQuery(function($) {
 function showTicket(post) {
 	$('#short_description').html($('#'+post).find('.ticket_description').find('.description')[0].innerHTML.trim());
 	$('#long_description').html($('#'+post).find('.ticket_description').find('.hidden_description')[0].innerHTML.trim());
+	$('#profilepic_big')[0].src = $("#"+post).find('img')[0].src;
 }
 
