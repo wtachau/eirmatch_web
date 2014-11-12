@@ -13,6 +13,7 @@ class User(models.Model):
 	email = models.CharField(max_length=255)
 	googleID = models.CharField(max_length=255)
 	image = models.CharField(max_length=255)
+	relevant_tags = ListField(models.CharField(max_length=255))
 
 	def __str__(self):
 		return self.name

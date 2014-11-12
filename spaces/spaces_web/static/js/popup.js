@@ -22,7 +22,7 @@ jQuery(function($) {
 		disablePopup();
 	});
 
-	// Submit form to server
+	// Submit post form to server
 	$("#postForm").submit(function(e)
 	{
 		var postData = $(this).serializeArray();
@@ -49,7 +49,30 @@ jQuery(function($) {
 		gapi.auth.signOut();
 	    document.location="/logout";
 	});
-	
+
+	// update tags 
+	$("#updateTagsForm").submit(function(e)
+	{
+		var postData = $(this).serializeArray();
+	    var formURL = $(this).attr("action");
+	    $.ajax(
+	    {
+	        url : formURL,
+	        type: "POST",
+	        data : postData,
+	        success:function(data, textStatus, jqXHR) 
+	        {
+	            console.log(data);
+	            disablePopup();
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            alert("Error! Failed response from the server");    
+	        }
+	    });
+	    console.log("Asdf");
+	    e.preventDefault(); //STOP default action
+	});
 
 	/* Functions to actually show or hide popup */
 	

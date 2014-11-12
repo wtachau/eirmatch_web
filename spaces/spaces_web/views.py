@@ -31,7 +31,7 @@ def tryLogin(request):
 		email = data['emails[0][value]']
 		name = data['displayName']
 		image = data['result[image][url]'].split('?')[0]
-		newUser = User(name=name, email=email, googleID=googleID, image=image)
+		newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
 		newUser.save()
 		response.set_cookie('id', newUser.googleID)
 	except Exception as e:
@@ -39,21 +39,19 @@ def tryLogin(request):
 	return response
 
 def home(request):
-	
 	# See if there is a user logged in
 	try:	
 		context = {}
 		context['user'] = currentUser(request)
-
 		# get relevant posts and most recent
-		relevant_posts =  getPostsInfo(user=None)#context['user'])
+		relevant_posts =  getPostsInfo(user=context['user'])
 		all_posts = getPostsInfo(user=None)
 		context['all_posts'] = all_posts
 		context['relevant_posts'] = relevant_posts
 		context.update(csrf(request))
 
 		# generate all tags (for posting suggestions)
-		context['tags'] = Tag.objects.all()
+		context['tags'] = getAllTags(context['user'])
 		return render(request, 'index.html', context)
 
 	# if there was no user logged in
@@ -61,22 +59,49 @@ def home(request):
 		return HttpResponseRedirect("login")
 	
 
+# Return all tags, noting those that are relevant to the user
+def getAllTags(user):
+	allTags = Tag.objects.all()
+	userTags = user.relevant_tags
+	
+	tagObjects = []
+	for tag in allTags:
+		tagObject = {}
+		tagObject['name'] = tag.name
+		if tag.id in userTags:
+			tagObject['userRelevant'] = True
+		else:
+			tagObject['userRelevant'] = False
+		tagObjects.append(tagObject)
+	return tagObjects
+
+
 # Gets information for Posts. 
 # If user is set, only include posts specific to that user.
 def getPostsInfo(user):
+	posts = Post.objects.all()
 	postsInfo = []
-	if not user:
-		posts = Post.objects.all()
-	else:
-		posts = Post.objects.all() #fixme
+
+	userTags = []
+	if user:
+		userTags = user.relevant_tags
 
 	for post in posts:
+		isRelevant = False
 		postInfo = {}
 		tagnames = []
-		for tagString in post.tags:
+		for tagID in post.tags:
+			# get tag from tag ID
 			try:
-				tag = Tag.objects.get(id=tagString)
+				tag = Tag.objects.get(id=tagID)
 				tagnames.append(tag)
+
+				print "^^%s -- %s" % (tagID, userTags)
+
+				# Check if tag is relevant to user (if it matches a user tag)
+				if user and tagID in userTags:
+					isRelevant = True
+
 			except Exception as e:
 				print "exception: %s" % e
 		# generate dict from model to pass to view
@@ -85,7 +110,10 @@ def getPostsInfo(user):
 		postInfo['long_description']=post.long_description
 		postInfo['numComments']=len(post.comments)
 		postInfo['tagnames']=tagnames
-		postsInfo.append(postInfo)
+
+		# if we're grabbing all posts or is relevant
+		if not user or isRelevant:
+			postsInfo.append(postInfo)
 	return postsInfo
 
 
@@ -93,8 +121,10 @@ def getPostsInfo(user):
 def addPost(request):
 	data = request.POST
 	tagIDs = checkIDs(data.getlist('tags'))
+	shortDesc = data.getlist('short')[0]
+	longDesc = data.getlist('long')[0]	
 	try:
-		newPost = Post(poster=currentUser(request), short_description=data['short'], long_description=data['long'], tags=tagIDs, comments=[])
+		newPost = Post(poster=currentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
 		newPost.save()
 		return HttpResponse(newPost)
 	except Exception as e:
@@ -117,3 +147,18 @@ def checkIDs(tagStrings):
 			newTag.save()
 			tagIDs.append(newTag.id)
 	return tagIDs
+
+
+# Receives an Ajax request from the webpage to update the user's tags
+def updateTags(request):
+	data = request.POST
+	tagIDs = checkIDs(data.getlist('tags'))
+	user = currentUser(request)
+	try:
+		user.relevant_tags = tagIDs
+		user.save()
+		return HttpResponse("success")
+	except Exception as e:
+		return HttpResponse(e)
+
+

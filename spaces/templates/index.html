@@ -54,7 +54,7 @@
 				<div id="tag-selector-wrapper">
 				<select id="select-tag" name="tags" form="postForm" multiple placeholder="choose tags...">
 				{% for tag in tags %}
-					<option value={{tag}}>{{tag}}</option>
+					<option value={{tag.name}}>{{tag.name}}</option>
 				{% endfor %}
 				</select>
 				</div>
@@ -89,11 +89,38 @@
    	<!-- begin post popup -->
 	<div id="profilePopup" class="popup"> 
 		<div id="profilePopupContent"> 
-            <h3> Show Profile </p>
-            <br />
-            <p>
-            More text here. </p>
+            <h3> {{ user.name }} </p>
+            <img id="profileImage" src={{ user.image }}?sz=200>
+            <br><br>
+            <!-- Update tags. See http://brianreavis.github.io/selectize.js/  -->
+            <form name="updateTagsForm" id="updateTagsForm" action="updateTags" method="POST">
+				<span>update your relevant tags</span>
+				<div id="tag-updater-wrapper">
+				<select id="select-tag-update" name="tags" form="updateTagsForm" multiple placeholder="choose tags...">
+				{% for tag in tags %}
+					<option value={{tag.name}} {% if tag.userRelevant %} selected {% endif %} >{{tag.name}}</option>
+				{% endfor %}
+				</select>
+				</div>
+				<script>
+				$('#select-tag-update').selectize({
+					delimiter: ',',
+				    persist: false,
+				    create: function(input) {
+				        return {
+				            value: input,
+				            text: input
+				        }
+				    }
+				});
+				</script>
+				{% csrf_token %}
 
+				<input type="submit" value="Update">
+			</form>
+			<!-- End of tagging form -->
+
+			<br><br>
             <span id="signinButton" style="display:none;">
 	          <span 
 	            class="g-signin"
@@ -104,7 +131,6 @@
 	            data-scope="openid email">
 	          </span>
 	        </span>
-
             <div id="logout" style="display:none;">sign out</div>
         </div> 
     

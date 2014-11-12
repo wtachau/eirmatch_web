@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     # ajax responses
     url(r'^addPost$', views.addPost, name="addPost"),
     url(r'^tryLogin$', views.tryLogin, name="tryLogin"),
+    url(r'^updateTags$', views.updateTags, name="updateTags"),
 
     # admin page
     url(r'^admin/', include(admin.site.urls)),
