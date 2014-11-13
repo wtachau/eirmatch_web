@@ -1,6 +1,6 @@
 jQuery(function($) {
 
-	function makeAjaxRequest(form, event) {
+	function makeAjaxRequest(form, event, onSuccess) {
 		//STOP default action
 		event.preventDefault();
 		var postData = $(form).serializeArray();
@@ -12,7 +12,9 @@ jQuery(function($) {
 	        data : postData,
 	        success:function(data, textStatus, jqXHR) 
 	        {
-	            console.log(data);
+	            if (onSuccess != null) {
+	            	onSuccess(data);
+	            }
 	            disablePopup();
 	        },
 	        error: function(jqXHR, textStatus, errorThrown) 
@@ -26,44 +28,41 @@ jQuery(function($) {
 	// Submit post form to server
 	$("#postForm").submit(function(e)
 	{
-		makeAjaxRequest(this, e);
+		var callback = function(data) {
+			jsonData = $.parseJSON(data);
+			addTicket(jsonData['postID'], jsonData['image'], jsonData['short'], jsonData['long'], jsonData['tags'], jsonData['staticURL']);
+		}
+		makeAjaxRequest(this, e, callback);
 	});
 
 	// update tags 
 	$("#updateTagsForm").submit(function(e)
 	{
-		makeAjaxRequest(this, e);	
+		makeAjaxRequest(this, e, null);	
+	});
+
+	$("#addCommentForm").keypress(function(event) {
+	    if (event.which == 13) {
+	        event.preventDefault();
+	        $("#addCommentForm").submit();
+	    }
 	});
 
 	// add comment 
 	$("#addCommentForm").submit(function(e)
 	{
-		makeAjaxRequest(this, e);
-		var postData = $(this).serializeArray();
-		var userImage;
-		var userComment;
-		$.each( postData, function( num, data ) {
-		  if (data['name'] == "userImage") {
-		  	userImage = data['value'];
-		  } else if (data['name'] == "comment") {
-		  	userComment = data['value'];
-		  }
-		});
-		// clear form
-		$("#addCommentForm").find("textarea").val("");
-		// add new box
-		$("#addCommentForm").before("<div class='comment_box'>"+
-							"<table style='width: 100%;'>"+
-								"<tr>"+
-									"<td class='comment_img_box'>"+
-										"<img class='comment_img' src="+userImage+"?sz=50>"+
-									"</td>"+
-									"<td>"+
-										"<span class='comment_text'>"+userComment+"</span>"+
-									"</td>"+
-								"</tr>"+
-							"</table>"+
-						"</div>");
+		// add comment to server
+		var callback = function(data) {
+			// update numComments bubble
+			jsonData = $.parseJSON(data);
+			console.log(jsonData);
+			$(".ticket-"+jsonData['postID']).find('.num_comments').html(jsonData['numComments']);
+			// add new box
+			addCommentBox(jsonData['userImage'], jsonData['comment']);
+			// clear form
+			$("#addCommentForm").find("textarea").val("");
+		}
+		makeAjaxRequest(this, e, callback);
 	});
 
 	$("#logout").click(function() {
@@ -123,8 +122,82 @@ jQuery(function($) {
 
 /* Show tickets */
 function showTicket(post) {
-	$('#short_description').html($('#'+post).find('.ticket_description').find('.description')[0].innerHTML.trim());
-	$('#long_description').html($('#'+post).find('.ticket_description').find('.hidden_description')[0].innerHTML.trim());
-	$('#profilepic_big')[0].src = $("#"+post).find('img')[0].src;
+	
+	var ticketID = "ticket-"+post;
+	var ticketSection = $('.'+ticketID);
+	// update short description, long description, profile picture, name, emailand tags
+	$('#short_description').html(ticketSection.find('.ticket_description').find('.description')[0].innerHTML.trim());
+	$('#long_description').html(ticketSection.find('.ticket_description').find('.hidden_description')[0].innerHTML.trim());
+	$('#tags_description').html("[ "+ticketSection.find('.tags')[0].innerHTML.trim()+" ]");
+	$('#profilepic_big')[0].src = ticketSection.find('img')[0].src;
+	$("#contact_me_name").html(ticketSection.find('.ticket_description').find('.hidden_name')[0].innerHTML.trim());
+	$("#contact_me").find('a').attr('href', 'mailto:' + ticketSection.find('.ticket_description').find('.hidden_email')[0].innerHTML.trim());
+	// update submit form ID property so comments are added to correct Post
+	$("#addCommentForm").find('input[name=postID]').val(post);
+	// get comments from server
+	$.ajax(
+	    {
+	        url : "getComments",
+	        type: "GET",
+	        data: {'postID':post},
+	        success:function(data, textStatus, jqXHR) 
+	        {
+	        	// remove previous comments
+				$(".comment_box").remove();
+	        	// add comments
+	            $.each( data, function( num, comment ) {
+				  addCommentBox(comment['image'], comment['comment']);
+				});
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            alert("Error! Failed response from the server");
+	        }
+	    });
+}
+
+// Add comment
+function addCommentBox(userImage, userComment) {
+	$("#addCommentForm").before("<div class='comment_box'>"+
+									"<table style='width: 100%;'>"+
+										"<tr>"+
+											"<td class='comment_img_box'>"+
+												"<img class='comment_img' src="+userImage+"?sz=50>"+
+											"</td>"+
+											"<td>"+
+												"<span class='comment_text'>"+userComment+"</span>"+
+											"</td>"+
+										"</tr>"+
+									"</table>"+
+								"</div>");
+}
+
+// Add ticket to the "most recent" pane
+function addTicket(postID, image, shortDesc, longDesc, tags, staticURL) {
+	console.log(postID, image, shortDesc, longDesc, tags, staticURL);
+	$("#all_posts").prepend("<div class='ticket-"+postID+" ticket_box fade' onclick='showTicket(&quot;"+postID+"&quot;);'>"+
+	        		"<table>"+
+		        		"<tr>"+
+			        		"<td class='ticket_left_half'>"+
+				        		"<img class='profilepic_small' src=" +image+ "><br>"+
+			        		"</td>"+
+			        		"<td class='ticket_description'>"+
+			        			"<span class='description'>"+
+			        				shortDesc+
+			        			"</span>"+
+			        			"<span class='hidden_description' style='display:none'>"+
+			        				longDesc+
+			        			"</span>"+
+				        		"<div class='tags'>"+
+				        			tags+
+				        		"</div>"+
+			        		"</td>"+
+			        		"<td class='ticket_rightview'>"+
+			        			"<img class='speechbubble' src='" + staticURL + "img/speechbubble.png'>"+
+			        			"<div class='num_comments'>0</div>"+
+			        		"</td>"+
+		        		"</tr>"+
+	        		"</table>"+
+	        	"</div>");
 }
 

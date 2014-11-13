@@ -183,6 +183,10 @@ background:rgba(255,255,255,1);
 	font-size: 13px;
 	padding:15px;
 }
+#tags_description {
+	color: rgb(110,110,110);
+	font-size: 14px;
+}
 
 .comment_box {
 	background-color: rgb(233, 233, 233);
@@ -303,6 +307,12 @@ background:rgba(255,255,255,1);
 #postPopupContent textarea[name="long"] {
 	width: 39%;
 	height: 100px;
+}
+#postPopupContent textarea {
+	-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+	border: 1px solid #d0d0d0;
+	padding: 8px 8px;
 }
 
 /* Profile Popup */

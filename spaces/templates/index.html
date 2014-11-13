@@ -148,11 +148,11 @@
 					<div>in your skill set</div>
 				</div>
 				<div class="left_section skills">
-			        <div class="overflow_section" id="top_overflow">
+			        <div class="overflow_section" id="relevant_posts">
 			        	
 			        	{% for post in relevant_posts %}
 
-			        	<div id="ticket-{{post.id}}" onclick="showTicket('ticket-{{post.id}}');" class="ticket_box fade">
+			        	<div class="ticket-{{post.id}} ticket_box fade" onclick="showTicket('{{post.id}}');" >
 			        		<table>
 				        		<tr>
 					        		<td class="ticket_left_half">
@@ -164,6 +164,12 @@
 					        			</span>
 					        			<span class="hidden_description" style="display:none">
 					        				{{post.long_description }}
+					        			</span>
+					        			<span class="hidden_name" style="display:none">
+					        				{{ post.poster }}
+					        			</span>
+					        			<span class="hidden_email" style="display:none">
+					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
 						        			{% for tag in post.tagnames %}
@@ -191,12 +197,12 @@
 				<div class="section_header all">
 				<div>most recent</div>
 				</div>
-				<div class="left_section skills">
-			        <div class="overflow_section" id="top_overflow">
+				<div class="left_section all">
+			        <div class="overflow_section" id="all_posts">
 			        	
 			        	{% for post in all_posts %}
 
-			        	<div id="ticket-{{post.id}}" onclick="showTicket('ticket-{{post.id}}');" class="ticket_box fade">
+			        	<div class="ticket-{{post.id}} ticket_box fade" onclick="showTicket('{{post.id}}');">
 			        		<table>
 				        		<tr>
 					        		<td class="ticket_left_half">
@@ -208,6 +214,12 @@
 					        			</span>
 					        			<span class="hidden_description" style="display:none">
 					        				{{post.long_description }}
+					        			</span>
+					        			<span class="hidden_name" style="display:none">
+					        				{{ post.poster }}
+					        			</span>
+					        			<span class="hidden_email" style="display:none">
+					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
 						        			{% for tag in post.tagnames %}
@@ -240,7 +252,7 @@
 							<img id="profilepic_big" src="{{ user.image }}">
 						</div>
 						<div id="contact_me">
-							{{ relevant_posts.0.poster }}<br>
+							<span id="contact_me_name">{{ relevant_posts.0.poster }}</span><br>
 							<a href="mailto:{{ relevant_posts.0.poster.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
 
 						</div>
@@ -248,29 +260,35 @@
 						<div id="short_description">
 							{{ relevant_posts.0.short_description }}
 						</div>
+						<div id="tags_description">
+							[{% for tag in relevant_posts.0.tagnames %}
+			        			{{ tag }}
+		        			{% endfor %}]
+						</div>
 						<div id="long_description">
 							{{ relevant_posts.0.long_description }}
 						</div>
 
-						{% for comment in relevant_posts.0.comments %}
-						<div class="comment_box">
-							<table style="width: 100%;">
-								<tr>
-									<td class="comment_img_box">
-										<img class="comment_img" src={{comment.user.image}}?sz=50>
-									</td>
-									<td>
-										<span class="comment_text">{{ comment }}</span>
-									</td>
-								</tr>
-							</table>
+						<div id="previous_comments">
+							{% for comment in relevant_posts.0.comments %}
+							<div class="comment_box">
+								<table style="width: 100%;">
+									<tr>
+										<td class="comment_img_box">
+											<img class="comment_img" src={{comment.user.image}}?sz=50>
+										</td>
+										<td>
+											<span class="comment_text">{{ comment }}</span>
+										</td>
+									</tr>
+								</table>
+							</div>
+							{% endfor %}
 						</div>
-						{% endfor %}
 
 						<form method="post" id="addCommentForm" action="addComment">
 							{% csrf_token %}
 							<input type="hidden" name="postID" value={{relevant_posts.0.id}}>
-							<input type="hidden" name="userID" value={{user.id}}>
 							<input type="hidden" name="userImage" value={{user.image}}>
 							<textarea class="ticket_comment" placeholder="Something to say?" name="comment" cols="25" rows="5"></textarea>
 							<br>

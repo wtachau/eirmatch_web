@@ -3,9 +3,11 @@ from django.core.context_processors import csrf
 from spaces_web.models import Post, Comment, User, Tag
 from django.http import HttpResponse, HttpResponseRedirect
 import json
+from django.conf import settings
+from django.core import serializers
 
 # Return current user from cookie
-def currentUser(request):
+def getCurrentUser(request):
 	return User.objects.get(googleID=int(request.COOKIES['id']))
 
 def login(request):
@@ -42,7 +44,7 @@ def home(request):
 	# See if there is a user logged in
 	try:	
 		context = {}
-		context['user'] = currentUser(request)
+		context['user'] = getCurrentUser(request)
 		# get relevant posts and most recent
 		relevant_posts =  getPostsInfo(user=context['user'])
 		all_posts = getPostsInfo(user=None)
@@ -107,6 +109,7 @@ def getPostsInfo(user):
 		postInfo['numComments']=len(post.comments)
 		postInfo['tagnames']=tagnames
 		postInfo['poster']=post.poster
+		postInfo['email'] = post.poster.email
 		postInfo['comments']=post.comments
 
 		# if we're grabbing all posts or is relevant
@@ -122,9 +125,16 @@ def addPost(request):
 	shortDesc = data.getlist('short')[0]
 	longDesc = data.getlist('long')[0]	
 	try:
-		newPost = Post(poster=currentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
+		newPost = Post(poster=getCurrentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
 		newPost.save()
-		return HttpResponse(newPost)
+		returnPost = {}
+		returnPost['postID'] = newPost.id
+		returnPost['image'] = newPost.poster.image
+		returnPost['short'] = shortDesc
+		returnPost['long'] = longDesc
+		returnPost['tags'] = ", ".join(map(lambda tag: Tag.objects.get(id=tag).name, newPost.tags))
+		returnPost['staticURL'] = settings.STATIC_URL
+		return HttpResponse(json.dumps(returnPost))
 	except Exception as e:
 		print e
 		return HttpResponse(" error: %s"%e)
@@ -151,7 +161,7 @@ def checkIDs(tagStrings):
 def updateTags(request):
 	data = request.POST
 	tagIDs = checkIDs(data.getlist('tags'))
-	user = currentUser(request)
+	user = getCurrentUser(request)
 	try:
 		user.relevant_tags = tagIDs
 		user.save()
@@ -164,15 +174,36 @@ def addComment(request):
 	data = request.POST
 	postID = data.getlist('postID')[0]
 	comment = data.getlist('comment')[0]
-	userID = data.getlist('userID')[0]
+	currentUser = getCurrentUser(request)
 	try:
 		currentPost = Post.objects.get(id=postID)
-		user = User.objects.get(id=userID)
-		currentPost.comments.append(Comment(text=comment, user=user))
+		currentPost.comments.append(Comment(text=comment, user=currentUser))
 		currentPost.save()
-		return HttpResponse("success")
+
+		returnData = {'postID':postID}
+		returnData['numComments'] = len(currentPost.comments)
+		returnData['userImage'] = currentUser.image
+		returnData['comment'] = comment
+		return HttpResponse(json.dumps(returnData))
 	except Exception as e:
 		return HttpResponse(e)
 
+# Get comments for a Post
+def getComments(request):
+	data = request.GET
+
+	postID = data.getlist('postID')[0]
+	comments = Post.objects.get(id=postID).comments
+
+	returnData = []
+	for comment in comments:
+		commentData = {}
+		commentData['comment'] = comment.text
+		commentData['image'] = comment.user.image
+	
+		returnData.append(commentData)
+
+	# returnData = serializers.serialize('json', returnData)
+	return HttpResponse(json.dumps(returnData), mimetype="application/json")
 
 
