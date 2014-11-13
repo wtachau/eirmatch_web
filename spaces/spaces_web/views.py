@@ -134,6 +134,8 @@ def addPost(request):
 		returnPost['long'] = longDesc
 		returnPost['tags'] = ", ".join(map(lambda tag: Tag.objects.get(id=tag).name, newPost.tags))
 		returnPost['staticURL'] = settings.STATIC_URL
+		returnPost['name'] = newPost.poster.name
+		returnPost['email'] = newPost.poster.email
 		return HttpResponse(json.dumps(returnPost))
 	except Exception as e:
 		print e

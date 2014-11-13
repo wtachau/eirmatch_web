@@ -30,7 +30,9 @@ jQuery(function($) {
 	{
 		var callback = function(data) {
 			jsonData = $.parseJSON(data);
-			addTicket(jsonData['postID'], jsonData['image'], jsonData['short'], jsonData['long'], jsonData['tags'], jsonData['staticURL']);
+			addTicket(jsonData['postID'], jsonData['image'], jsonData['short'], 
+				      jsonData['long'], jsonData['tags'], jsonData['staticURL'], 
+				      jsonData['name'], jsonData['email']);
 		}
 		makeAjaxRequest(this, e, callback);
 	});
@@ -173,7 +175,7 @@ function addCommentBox(userImage, userComment) {
 }
 
 // Add ticket to the "most recent" pane
-function addTicket(postID, image, shortDesc, longDesc, tags, staticURL) {
+function addTicket(postID, image, shortDesc, longDesc, tags, staticURL, name, email) {
 	console.log(postID, image, shortDesc, longDesc, tags, staticURL);
 	$("#all_posts").prepend("<div class='ticket-"+postID+" ticket_box fade' onclick='showTicket(&quot;"+postID+"&quot;);'>"+
 	        		"<table>"+
@@ -187,6 +189,12 @@ function addTicket(postID, image, shortDesc, longDesc, tags, staticURL) {
 			        			"</span>"+
 			        			"<span class='hidden_description' style='display:none'>"+
 			        				longDesc+
+			        			"</span>"+
+			        			"<span class='hidden_name' style='display:none'>"+
+			        				name+
+			        			"</span>"+
+			        			"<span class='hidden_email' style='display:none'>"+
+			        				email+
 			        			"</span>"+
 				        		"<div class='tags'>"+
 				        			tags+
