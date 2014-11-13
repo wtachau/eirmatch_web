@@ -95,13 +95,9 @@ def getPostsInfo(user):
 			try:
 				tag = Tag.objects.get(id=tagID)
 				tagnames.append(tag)
-
-				print "^^%s -- %s" % (tagID, userTags)
-
 				# Check if tag is relevant to user (if it matches a user tag)
 				if user and tagID in userTags:
 					isRelevant = True
-
 			except Exception as e:
 				print "exception: %s" % e
 		# generate dict from model to pass to view
@@ -110,6 +106,8 @@ def getPostsInfo(user):
 		postInfo['long_description']=post.long_description
 		postInfo['numComments']=len(post.comments)
 		postInfo['tagnames']=tagnames
+		postInfo['poster']=post.poster
+		postInfo['comments']=post.comments
 
 		# if we're grabbing all posts or is relevant
 		if not user or isRelevant:
@@ -160,5 +158,21 @@ def updateTags(request):
 		return HttpResponse("success")
 	except Exception as e:
 		return HttpResponse(e)
+
+# Add a comment to a Post
+def addComment(request):
+	data = request.POST
+	postID = data.getlist('postID')[0]
+	comment = data.getlist('comment')[0]
+	userID = data.getlist('userID')[0]
+	try:
+		currentPost = Post.objects.get(id=postID)
+		user = User.objects.get(id=userID)
+		currentPost.comments.append(Comment(text=comment, user=user))
+		currentPost.save()
+		return HttpResponse("success")
+	except Exception as e:
+		return HttpResponse(e)
+
 
 

@@ -29,8 +29,8 @@
 <body>
 	<div id="header">
 		<div id="logo_full">
-			<span id="logo_1">Originate</span>
-			<span id="logo_2">SPACES</span>
+			<!-- <span id="logo_1">Originate</span>
+			<span id="logo_2">SPACES</span> -->
 		</div>
 		<div class="upper_right" id="add_profile">
 			<img src="{% static 'img/profile.png' %}">
@@ -40,7 +40,7 @@
 		</div>
 	</div>
 
-	<!-- begin post popup -->
+	<!-- Add Post popup -->
 	<div id="postPopup" class="popup"> 
 		<div id="postPopupContent"> 
             <h2> Add Post </h2>
@@ -86,7 +86,7 @@
     </div> 
    	<!-- end post popup -->
 
-   	<!-- begin post popup -->
+   	<!-- Profile popup -->
 	<div id="profilePopup" class="popup"> 
 		<div id="profilePopupContent"> 
             <h3> {{ user.name }} </p>
@@ -135,9 +135,8 @@
         </div> 
     
     </div> 
-	<!-- <div class="loader"></div> ADD LOADING GIF HERE -->
    	<div id="backgroundPopup"></div>
-   	<!-- end post popup -->
+   	<!-- end profile popup -->
 
 	<table id="body_table">
 		<tr>
@@ -231,6 +230,9 @@
 			        </div>
 				</div>
 			</td>
+
+			<!-- Right Panel -->
+
 			<td id="right_panel">
 				<div id="right_panel_fixed_height">
 					<div id="right_panel_content">
@@ -238,8 +240,8 @@
 							<img id="profilepic_big" src="{{ user.image }}">
 						</div>
 						<div id="contact_me">
-							{{ user.name }}<br>
-							<a href="mailto:{{ user.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
+							{{ relevant_posts.0.poster }}<br>
+							<a href="mailto:{{ relevant_posts.0.poster.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
 
 						</div>
 
@@ -249,17 +251,28 @@
 						<div id="long_description">
 							{{ relevant_posts.0.long_description }}
 						</div>
-						<textarea disabled class="ticket_comment">
-							I could probably help with that
-						</textarea><br>
-						<textarea disabled class="ticket_comment">
-							Yeah that sounds cool
-						</textarea><br>
 
-						</textarea>
+						{% for comment in relevant_posts.0.comments %}
+						<div class="comment_box">
+							<table style="width: 100%;">
+								<tr>
+									<td class="comment_img_box">
+										<img class="comment_img" src={{comment.user.image}}?sz=50>
+									</td>
+									<td>
+										<span class="comment_text">{{ comment }}</span>
+									</td>
+								</tr>
+							</table>
+						</div>
+						{% endfor %}
 
-						<form method="post" action="">
-							<textarea class="ticket_comment" placeholder="Something to say?" name="comments" cols="25" rows="5"></textarea>
+						<form method="post" id="addCommentForm" action="addComment">
+							{% csrf_token %}
+							<input type="hidden" name="postID" value={{relevant_posts.0.id}}>
+							<input type="hidden" name="userID" value={{user.id}}>
+							<input type="hidden" name="userImage" value={{user.image}}>
+							<textarea class="ticket_comment" placeholder="Something to say?" name="comment" cols="25" rows="5"></textarea>
 							<br>
 							<input class="ticket_submit" type="submit" value="Submit" />
 						</form>

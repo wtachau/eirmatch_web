@@ -1,5 +1,5 @@
 from django.db import models
-from djangotoolbox.fields import EmbeddedModelField, ListField, DictField
+from djangotoolbox.fields import EmbeddedModelField, ListField
 
 class Tag(models.Model):
 	name = models.CharField(max_length=255)
@@ -20,6 +20,7 @@ class User(models.Model):
 
 class Comment(models.Model):
 	text = models.TextField()
+	user = models.ForeignKey(User)
 	def __str__(self):
 		return self.text
 
@@ -28,7 +29,7 @@ class Post(models.Model):
 	short_description = models.TextField()
 	long_description = models.TextField()
 	tags = ListField(models.CharField(max_length=255))
-	comments = ListField(models.ForeignKey(Comment))
+	comments = ListField(EmbeddedModelField(Comment))
 	active = models.BooleanField(default=True)
 
 	def __str__(self):

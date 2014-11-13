@@ -1,5 +1,76 @@
 jQuery(function($) {
 
+	function makeAjaxRequest(form, event) {
+		//STOP default action
+		event.preventDefault();
+		var postData = $(form).serializeArray();
+	    var formURL = $(form).attr("action");
+	    $.ajax(
+	    {
+	        url : formURL,
+	        type: "POST",
+	        data : postData,
+	        success:function(data, textStatus, jqXHR) 
+	        {
+	            console.log(data);
+	            disablePopup();
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            alert("Error! Failed response from the server");
+	            console.log(errorThrown + " " + textStatus);    
+	        }
+	    });
+	}
+
+	// Submit post form to server
+	$("#postForm").submit(function(e)
+	{
+		makeAjaxRequest(this, e);
+	});
+
+	// update tags 
+	$("#updateTagsForm").submit(function(e)
+	{
+		makeAjaxRequest(this, e);	
+	});
+
+	// add comment 
+	$("#addCommentForm").submit(function(e)
+	{
+		makeAjaxRequest(this, e);
+		var postData = $(this).serializeArray();
+		var userImage;
+		var userComment;
+		$.each( postData, function( num, data ) {
+		  if (data['name'] == "userImage") {
+		  	userImage = data['value'];
+		  } else if (data['name'] == "comment") {
+		  	userComment = data['value'];
+		  }
+		});
+		// clear form
+		$("#addCommentForm").find("textarea").val("");
+		// add new box
+		$("#addCommentForm").before("<div class='comment_box'>"+
+							"<table style='width: 100%;'>"+
+								"<tr>"+
+									"<td class='comment_img_box'>"+
+										"<img class='comment_img' src="+userImage+"?sz=50>"+
+									"</td>"+
+									"<td>"+
+										"<span class='comment_text'>"+userComment+"</span>"+
+									"</td>"+
+								"</tr>"+
+							"</table>"+
+						"</div>");
+	});
+
+	$("#logout").click(function() {
+		gapi.auth.signOut();
+	    document.location="/logout";
+	});
+
 	/* Listen for events to show or hide popup */
 
 	$("#add_post").click(function() {
@@ -20,58 +91,6 @@ jQuery(function($) {
 	
 	$("div#backgroundPopup").click(function() {
 		disablePopup();
-	});
-
-	// Submit post form to server
-	$("#postForm").submit(function(e)
-	{
-		var postData = $(this).serializeArray();
-	    var formURL = $(this).attr("action");
-	    $.ajax(
-	    {
-	        url : formURL,
-	        type: "POST",
-	        data : postData,
-	        success:function(data, textStatus, jqXHR) 
-	        {
-	            console.log(data);
-	            disablePopup();
-	        },
-	        error: function(jqXHR, textStatus, errorThrown) 
-	        {
-	            alert("Error! Failed response from the server");    
-	        }
-	    });
-	    e.preventDefault(); //STOP default action
-	});
-
-	$("#logout").click(function() {
-		gapi.auth.signOut();
-	    document.location="/logout";
-	});
-
-	// update tags 
-	$("#updateTagsForm").submit(function(e)
-	{
-		var postData = $(this).serializeArray();
-	    var formURL = $(this).attr("action");
-	    $.ajax(
-	    {
-	        url : formURL,
-	        type: "POST",
-	        data : postData,
-	        success:function(data, textStatus, jqXHR) 
-	        {
-	            console.log(data);
-	            disablePopup();
-	        },
-	        error: function(jqXHR, textStatus, errorThrown) 
-	        {
-	            alert("Error! Failed response from the server");    
-	        }
-	    });
-	    console.log("Asdf");
-	    e.preventDefault(); //STOP default action
 	});
 
 	/* Functions to actually show or hide popup */

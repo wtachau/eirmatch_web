@@ -137,6 +137,8 @@ body {
 	margin-top:15px;
 }
 
+/* RIGHT PANEL */
+
 #right_panel {
 	width:100%;
 	background: url(../img/background.jpg);
@@ -182,16 +184,12 @@ background:rgba(255,255,255,1);
 	padding:15px;
 }
 
-.ticket_comment {
+.comment_box {
 	background-color: rgb(233, 233, 233);
-	border:none;
-	resize:none;
-	width:95%;
 	border-radius:25px;
-	outline:0px;
-	min-height:47px;
-	text-align: center;
-	padding:20px;
+	min-height:65px;
+	margin-bottom: 5px; 
+	padding: 10px;
 }
 .ticket_submit {
 	border: 2px solid rgb(233, 233, 233);
@@ -200,10 +198,38 @@ background:rgba(255,255,255,1);
 	height: 25px;
 	border-radius: 15px;
 	color: gray;
+	margin-top: 5px;
+	cursor:pointer;
 }
 
 .ticket_submit:focus {
 	outline:0;
+}
+
+.comment_img {
+	width:40px;
+	border-radius: 20px;
+	margin-left:10px;
+	margin-top:10px;
+}
+.comment_img_box {
+	width: 60px;
+}
+.comment_text{
+	font-size: 12px;
+}
+
+.ticket_comment {
+	background-color: rgb(233, 233, 233);
+	width: 100%;
+	border-radius: 25px;
+	border: none;
+	resize: none;
+	padding: 20px;
+	height: 95px;
+}
+.ticket_comment:focus {
+	outline: none;
 }
 
 /* Footer */
