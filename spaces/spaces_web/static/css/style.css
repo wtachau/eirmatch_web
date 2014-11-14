@@ -86,7 +86,7 @@ body {
 }
 
 .ticket_box {
-	height:75px;
+	height:95px;
 	background: #EDFDFF;
 	float: left;
 	width: 100%;
@@ -98,6 +98,7 @@ body {
 .profilepic_small {
 	height: 60px;
 	border-radius:30px;
+	margin: 2px;
 }
 
 .ticket_left_half {
@@ -213,14 +214,17 @@ background:rgba(255,255,255,1);
 .comment_img {
 	width:40px;
 	border-radius: 20px;
-	margin-left:10px;
-	margin-top:10px;
+	margin:6px;
 }
 .comment_img_box {
 	width: 60px;
+	text-align: center;
 }
 .comment_text{
 	font-size: 12px;
+}
+.comment_name {
+	font-size: 14px;
 }
 
 .ticket_comment {

@@ -57,7 +57,8 @@ def home(request):
 		return render(request, 'index.html', context)
 
 	# if there was no user logged in
-	except:
+	except Exception as e:
+		print e
 		return HttpResponseRedirect("login")
 	
 
@@ -81,7 +82,7 @@ def getAllTags(user):
 # Gets information for Posts. 
 # If user is set, only include posts specific to that user.
 def getPostsInfo(user):
-	posts = Post.objects.all()
+	posts = Post.objects.all().order_by('date_updated').reverse()
 	postsInfo = []
 
 	userTags = []
@@ -91,32 +92,15 @@ def getPostsInfo(user):
 	for post in posts:
 		isRelevant = False
 		postInfo = {}
-		tagnames = []
-		for tagID in post.tags:
-			# get tag from tag ID
-			try:
-				tag = Tag.objects.get(id=tagID)
-				tagnames.append(tag)
-				# Check if tag is relevant to user (if it matches a user tag)
-				if user and tagID in userTags:
-					isRelevant = True
-			except Exception as e:
-				print "exception: %s" % e
-		# generate dict from model to pass to view
-		postInfo['id']=post.id
-		postInfo['short_description']=post.short_description
-		postInfo['long_description']=post.long_description
-		postInfo['numComments']=len(post.comments)
-		postInfo['tagnames']=tagnames
-		postInfo['poster']=post.poster
-		postInfo['email'] = post.poster.email
-		postInfo['comments']=post.comments
-
+		# get tag names from ids
+		tagnames = " ".join(map(lambda tagID: Tag.objects.get(id=tagID).name, post.tags))
+		# see if there are any user tags in the post
+		if len(filter(lambda x: x in userTags, post.tags)) > 0:
+			isRelevant = True
 		# if we're grabbing all posts or is relevant
 		if not user or isRelevant:
-			postsInfo.append(postInfo)
+			postsInfo.append(getSinglePostInfo(post))
 	return postsInfo
-
 
 # Receives Ajax request for a new Post.
 def addPost(request):
@@ -125,21 +109,25 @@ def addPost(request):
 	shortDesc = data.getlist('short')[0]
 	longDesc = data.getlist('long')[0]	
 	try:
-		newPost = Post(poster=getCurrentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
-		newPost.save()
-		returnPost = {}
-		returnPost['postID'] = newPost.id
-		returnPost['image'] = newPost.poster.image
-		returnPost['short'] = shortDesc
-		returnPost['long'] = longDesc
-		returnPost['tags'] = ", ".join(map(lambda tag: Tag.objects.get(id=tag).name, newPost.tags))
-		returnPost['staticURL'] = settings.STATIC_URL
-		returnPost['name'] = newPost.poster.name
-		returnPost['email'] = newPost.poster.email
-		return HttpResponse(json.dumps(returnPost))
+		post = Post(poster=getCurrentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
+		post.save()
+		return HttpResponse(json.dumps(getSinglePostInfo(post)))
 	except Exception as e:
-		print e
 		return HttpResponse(" error: %s"%e)
+
+# Get a view-friendly version of the Post info we need
+def getSinglePostInfo(post):
+	return {	'id':post.id,
+				'image': post.poster.image,
+				'short_description': post.short_description,
+				'long_description': post.long_description,
+				'tagnames': " ".join(map(lambda tag: Tag.objects.get(id=tag).name, post.tags)),
+				'staticURL': settings.STATIC_URL,
+				'poster': post.poster.name,
+				'displayName': post.poster.name.split(" ")[0],
+				'email': post.poster.email,
+				'numComments': len(post.comments)
+			}
 
 # Helper function for adding a Post
 # Input: list of strings used as tags in a post
@@ -182,10 +170,10 @@ def addComment(request):
 		currentPost.comments.append(Comment(text=comment, user=currentUser))
 		currentPost.save()
 
-		returnData = {'postID':postID}
-		returnData['numComments'] = len(currentPost.comments)
-		returnData['userImage'] = currentUser.image
-		returnData['comment'] = comment
+		returnData = {	'postID': postID, 
+						'numComments': len(currentPost.comments),
+						'userImage': currentUser.image,
+						'comment': comment }
 		return HttpResponse(json.dumps(returnData))
 	except Exception as e:
 		return HttpResponse(e)
@@ -199,13 +187,16 @@ def getComments(request):
 
 	returnData = []
 	for comment in comments:
-		commentData = {}
-		commentData['comment'] = comment.text
-		commentData['image'] = comment.user.image
-	
+		commentData = { 'comment': comment.text,
+						'image': comment.user.image,
+						'userFirstName': comment.user.name.split(" ")[0] }
 		returnData.append(commentData)
 
 	# returnData = serializers.serialize('json', returnData)
 	return HttpResponse(json.dumps(returnData), mimetype="application/json")
+
+def getRelevantTickets(request):
+	print json.dumps(getPostsInfo(user=getCurrentUser(request)))
+	return HttpResponse(json.dumps(getPostsInfo(user=getCurrentUser(request))))
 
 

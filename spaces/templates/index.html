@@ -157,6 +157,7 @@
 				        		<tr>
 					        		<td class="ticket_left_half">
 						        		<img class="profilepic_small" src="{{ user.image }}"><br>
+						        		<span id="ticket_name">{{ post.displayName}}</span>
 					        		</td>
 					        		<td class="ticket_description">
 					        			<span class="description">
@@ -172,9 +173,7 @@
 					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
-						        			{% for tag in post.tagnames %}
-						        			{{ tag }}
-						        			{% endfor %}
+						        			{{ post.tagnames }}
 						        		</div>
 					        		</td>
 					        		<td class="ticket_rightview">
@@ -206,7 +205,8 @@
 			        		<table>
 				        		<tr>
 					        		<td class="ticket_left_half">
-						        		<img class="profilepic_small" src="{{ user.image }}"><br>
+						        		<img class="profilepic_small" src="{{ post.image }}"><br>
+						        		<span id="ticket_name">{{ post.displayName}}</span>
 					        		</td>
 					        		<td class="ticket_description">
 					        			<span class="description">
@@ -222,9 +222,7 @@
 					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
-						        			{% for tag in post.tagnames %}
-						        			{{ tag }}
-						        			{% endfor %}
+						        			{{ post.tagnames }}
 						        		</div>
 					        		</td>
 					        		<td class="ticket_rightview">
@@ -253,7 +251,7 @@
 						</div>
 						<div id="contact_me">
 							<span id="contact_me_name">{{ relevant_posts.0.poster }}</span><br>
-							<a href="mailto:{{ relevant_posts.0.poster.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
+							<a href="mailto:{{ relevant_posts.0.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
 
 						</div>
 
@@ -261,9 +259,7 @@
 							{{ relevant_posts.0.short_description }}
 						</div>
 						<div id="tags_description">
-							[{% for tag in relevant_posts.0.tagnames %}
-			        			{{ tag }}
-		        			{% endfor %}]
+							[ {{ relevant_posts.0.tagnames }} ]
 						</div>
 						<div id="long_description">
 							{{ relevant_posts.0.long_description }}
@@ -275,10 +271,11 @@
 								<table style="width: 100%;">
 									<tr>
 										<td class="comment_img_box">
-											<img class="comment_img" src={{comment.user.image}}?sz=50>
+											<img class="comment_img" src={{comment.image}}?sz=50>
+											<span class="comment_name"> {{ relevant_posts.0.displayName }}</span>
 										</td>
 										<td>
-											<span class="comment_text">{{ comment }}</span>
+											<span class="comment_text">{{ comment.comment }}</span>
 										</td>
 									</tr>
 								</table>

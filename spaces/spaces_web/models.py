@@ -1,5 +1,6 @@
 from django.db import models
 from djangotoolbox.fields import EmbeddedModelField, ListField
+from datetime import datetime 
 
 class Tag(models.Model):
 	name = models.CharField(max_length=255)
@@ -31,6 +32,8 @@ class Post(models.Model):
 	tags = ListField(models.CharField(max_length=255))
 	comments = ListField(EmbeddedModelField(Comment))
 	active = models.BooleanField(default=True)
+	date_created = models.DateTimeField(default=datetime.now)
+	date_updated = models.DateTimeField(default=datetime.now)
 
 	def __str__(self):
 		return self.short_description

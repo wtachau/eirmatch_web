@@ -28,11 +28,15 @@ jQuery(function($) {
 	// Submit post form to server
 	$("#postForm").submit(function(e)
 	{
+		
+		// make server call
 		var callback = function(data) {
 			jsonData = $.parseJSON(data);
-			addTicket(jsonData['postID'], jsonData['image'], jsonData['short'], 
-				      jsonData['long'], jsonData['tags'], jsonData['staticURL'], 
-				      jsonData['name'], jsonData['email']);
+			addTicket("#all_posts", jsonData);
+			// then clear forms
+			$("#postForm").find('textarea[name=short]')[0].value = "";
+			$("#postForm").find('textarea[name=long]')[0].value = "";
+			$("#tag-selector-wrapper").find('div[data-value]').filter(function(i, e) { return $(e).attr("class") == "item"; }).remove();
 		}
 		makeAjaxRequest(this, e, callback);
 	});
@@ -41,6 +45,7 @@ jQuery(function($) {
 	$("#updateTagsForm").submit(function(e)
 	{
 		makeAjaxRequest(this, e, null);	
+		getRelevantTickets();
 	});
 
 	$("#addCommentForm").keypress(function(event) {
@@ -57,7 +62,6 @@ jQuery(function($) {
 		var callback = function(data) {
 			// update numComments bubble
 			jsonData = $.parseJSON(data);
-			console.log(jsonData);
 			$(".ticket-"+jsonData['postID']).find('.num_comments').html(jsonData['numComments']);
 			// add new box
 			addCommentBox(jsonData['userImage'], jsonData['comment']);
@@ -138,33 +142,58 @@ function showTicket(post) {
 	$("#addCommentForm").find('input[name=postID]').val(post);
 	// get comments from server
 	$.ajax(
-	    {
-	        url : "getComments",
-	        type: "GET",
-	        data: {'postID':post},
-	        success:function(data, textStatus, jqXHR) 
-	        {
-	        	// remove previous comments
-				$(".comment_box").remove();
-	        	// add comments
-	            $.each( data, function( num, comment ) {
-				  addCommentBox(comment['image'], comment['comment']);
-				});
-	        },
-	        error: function(jqXHR, textStatus, errorThrown) 
-	        {
-	            alert("Error! Failed response from the server");
-	        }
-	    });
+    {
+        url : "getComments",
+        type: "GET",
+        data: {'postID':post},
+        success:function(data, textStatus, jqXHR) 
+        {
+        	// remove previous comments
+			$(".comment_box").remove();
+        	// add comments
+            $.each( data, function( num, comment ) {
+			  addCommentBox(comment['image'], comment['comment'], comment['userFirstName']);
+			});
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+            alert("Error! Failed response from the server");
+        }
+    });
+}
+
+function getRelevantTickets() {
+	$.ajax(
+    {
+        url : "getRelevantTickets",
+        type: "GET",
+        success:function(data, textStatus, jqXHR) 
+        {
+        	// remove previous tickets
+			$(".left_section.skills").find(".ticket_box").remove();
+			// add relevant ones
+			
+			jsonData = $.parseJSON(data);
+        	// add comments
+            $.each( jsonData, function( num, ticket ) {
+			  addTicket("#relevant_posts", ticket);
+			});
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+            alert("Error! Failed response from the server");
+        }
+    });
 }
 
 // Add comment
-function addCommentBox(userImage, userComment) {
+function addCommentBox(userImage, userComment, userFirstName) {
 	$("#addCommentForm").before("<div class='comment_box'>"+
 									"<table style='width: 100%;'>"+
 										"<tr>"+
 											"<td class='comment_img_box'>"+
-												"<img class='comment_img' src="+userImage+"?sz=50>"+
+												"<img class='comment_img' src="+userImage + "?sz=50>"+
+												"<span class='comment_name'>"+ userFirstName + "</span>"+
 											"</td>"+
 											"<td>"+
 												"<span class='comment_text'>"+userComment+"</span>"+
@@ -175,33 +204,33 @@ function addCommentBox(userImage, userComment) {
 }
 
 // Add ticket to the "most recent" pane
-function addTicket(postID, image, shortDesc, longDesc, tags, staticURL, name, email) {
-	console.log(postID, image, shortDesc, longDesc, tags, staticURL);
-	$("#all_posts").prepend("<div class='ticket-"+postID+" ticket_box fade' onclick='showTicket(&quot;"+postID+"&quot;);'>"+
+function addTicket(htmlElement, ticket) { 
+	$(htmlElement).prepend("<div class='ticket-"+ticket['id']+" ticket_box fade' onclick='showTicket(&quot;"+ticket['id']+"&quot;);'>"+
 	        		"<table>"+
 		        		"<tr>"+
 			        		"<td class='ticket_left_half'>"+
-				        		"<img class='profilepic_small' src=" +image+ "><br>"+
+				        		"<img class='profilepic_small' src=" +ticket['image']+ "><br>"+
+				        		"<span id='ticket_name'>" + ticket['displayName'] + "</span>"+
 			        		"</td>"+
 			        		"<td class='ticket_description'>"+
 			        			"<span class='description'>"+
-			        				shortDesc+
+			        				ticket['short_description']+
 			        			"</span>"+
 			        			"<span class='hidden_description' style='display:none'>"+
-			        				longDesc+
+			        				ticket['long_description']+
 			        			"</span>"+
 			        			"<span class='hidden_name' style='display:none'>"+
-			        				name+
+			        				ticket['poster']+
 			        			"</span>"+
 			        			"<span class='hidden_email' style='display:none'>"+
-			        				email+
+			        				ticket['email']+
 			        			"</span>"+
 				        		"<div class='tags'>"+
-				        			tags+
+				        			ticket['tagnames']+
 				        		"</div>"+
 			        		"</td>"+
 			        		"<td class='ticket_rightview'>"+
-			        			"<img class='speechbubble' src='" + staticURL + "img/speechbubble.png'>"+
+			        			"<img class='speechbubble' src='" + ticket['staticURL'] + "img/speechbubble.png'>"+
 			        			"<div class='num_comments'>0</div>"+
 			        		"</td>"+
 		        		"</tr>"+
