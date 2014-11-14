@@ -64,7 +64,7 @@ jQuery(function($) {
 			jsonData = $.parseJSON(data);
 			$(".ticket-"+jsonData['postID']).find('.num_comments').html(jsonData['numComments']);
 			// add new box
-			addCommentBox(jsonData['userImage'], jsonData['comment']);
+			addCommentBox(jsonData['userImage'], jsonData['comment'], jsonData['userFirstName']);
 			// clear form
 			$("#addCommentForm").find("textarea").val("");
 		}

@@ -173,6 +173,7 @@ def addComment(request):
 		returnData = {	'postID': postID, 
 						'numComments': len(currentPost.comments),
 						'userImage': currentUser.image,
+						'userFirstName': currentPost.poster.name.split(" ")[0],
 						'comment': comment }
 		return HttpResponse(json.dumps(returnData))
 	except Exception as e:
