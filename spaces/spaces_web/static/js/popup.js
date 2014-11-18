@@ -88,6 +88,11 @@ jQuery(function($) {
 		return false;
 	})
 
+	$("#profile_popup_link").click(function() {
+		loadPopup("profile");
+		return false;
+	})
+
 	$(this).keyup(function(event) {
 		if (event.which == 27) { // 27 is 'Esc' 
 			disablePopup();
@@ -178,6 +183,12 @@ function getRelevantTickets() {
             $.each( jsonData, function( num, ticket ) {
 			  addTicket("#relevant_posts", ticket);
 			});
+			//remove text for no relevant skills
+			if (jsonData.length > 0) {
+				$("#no_skills_popup").hide();
+			} else {
+				$("#no_skills_popup").show();
+			}
         },
         error: function(jqXHR, textStatus, errorThrown) 
         {
@@ -205,8 +216,8 @@ function addCommentBox(userImage, userComment, userFirstName) {
 
 // Add ticket to the "most recent" pane
 function addTicket(htmlElement, ticket) { 
-	$(htmlElement).prepend("<div class='ticket-"+ticket['id']+" ticket_box fade' onclick='showTicket(&quot;"+ticket['id']+"&quot;);'>"+
-	        		"<table>"+
+	$(htmlElement).prepend("<div class='ticket-"+ticket['id']+" ticket_box' onclick='showTicket(&quot;"+ticket['id']+"&quot;);'>"+
+	        		"<table class='fade'>"+
 		        		"<tr>"+
 			        		"<td class='ticket_left_half'>"+
 				        		"<img class='profilepic_small' src=" +ticket['image']+ "><br>"+

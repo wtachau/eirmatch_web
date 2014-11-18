@@ -36,6 +36,7 @@ def tryLogin(request):
 		newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
 		newUser.save()
 		response.set_cookie('id', newUser.googleID)
+		response.set_cookie('first_login', True)
 	except Exception as e:
 		print "Exception: %s" % e
 	return response
@@ -50,7 +51,13 @@ def home(request):
 		all_posts = getPostsInfo(user=None)
 		context['all_posts'] = all_posts
 		context['relevant_posts'] = relevant_posts
+		context['display_post'] = relevant_posts[0] if len(relevant_posts) > 0 else all_posts[0]
 		context.update(csrf(request))
+
+		# if this is their first time logging in 
+		if ('first_login' in request.COOKIES):
+			context['first_login'] = True
+			response.delete_cookie('first_login')
 
 		# generate all tags (for posting suggestions)
 		context['tags'] = getAllTags(context['user'])

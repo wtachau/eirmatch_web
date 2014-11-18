@@ -29,8 +29,8 @@
 <body>
 	<div id="header">
 		<div id="logo_full">
-			<!-- <span id="logo_1">Originate</span>
-			<span id="logo_2">SPACES</span> -->
+			<span id="logo_1">Originate</span>
+			<span id="logo_2">SPACES</span>
 		</div>
 		<div class="upper_right" id="add_profile">
 			<img src="{% static 'img/profile.png' %}">
@@ -94,7 +94,12 @@
             <br><br>
             <!-- Update tags. See http://brianreavis.github.io/selectize.js/  -->
             <form name="updateTagsForm" id="updateTagsForm" action="updateTags" method="POST">
-				<span>update your relevant tags</span>
+            	{% if first_login %}
+            		<span>enter skills relevant to you</span>
+            	{% else %}
+            		<span>update your relevant skills</span>
+            	{% endif %}
+				
 				<div id="tag-updater-wrapper">
 				<select id="select-tag-update" name="tags" form="updateTagsForm" multiple placeholder="choose tags...">
 				{% for tag in tags %}
@@ -152,8 +157,8 @@
 			        	
 			        	{% for post in relevant_posts %}
 
-			        	<div class="ticket-{{post.id}} ticket_box fade" onclick="showTicket('{{post.id}}');" >
-			        		<table>
+			        	<div class="ticket-{{post.id}} ticket_box" onclick="showTicket('{{post.id}}');" >
+			        		<table class="fade">
 				        		<tr>
 					        		<td class="ticket_left_half">
 						        		<img class="profilepic_small" src="{{ user.image }}"><br>
@@ -188,6 +193,13 @@
 
 			        	{% endfor %}
 
+			        	<div id="no_skills_popup"
+				        	{% if relevant_posts|length > 0 %} style="display:none;" 
+				        	{% endif %}>
+				        	<i>No posts matching your skill set<br>
+			        		<span id="profile_popup_link">(click here to update)</span></i>
+				        </div>
+
 			        </div>
 				</div>
 
@@ -201,8 +213,8 @@
 			        	
 			        	{% for post in all_posts %}
 
-			        	<div class="ticket-{{post.id}} ticket_box fade" onclick="showTicket('{{post.id}}');">
-			        		<table>
+			        	<div class="ticket-{{post.id}} ticket_box" onclick="showTicket('{{post.id}}');">
+			        		<table class="fade">
 				        		<tr>
 					        		<td class="ticket_left_half">
 						        		<img class="profilepic_small" src="{{ post.image }}"><br>
@@ -247,32 +259,32 @@
 				<div id="right_panel_fixed_height">
 					<div id="right_panel_content">
 						<div id="profilepic_box">
-							<img id="profilepic_big" src="{{ user.image }}">
+							<img id="profilepic_big" src="{{ display_post.image }}">
 						</div>
 						<div id="contact_me">
-							<span id="contact_me_name">{{ relevant_posts.0.poster }}</span><br>
-							<a href="mailto:{{ relevant_posts.0.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
+							<span id="contact_me_name">{{ display_post.poster }}</span><br>
+							<a href="mailto:{{ display_post.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
 
 						</div>
 
 						<div id="short_description">
-							{{ relevant_posts.0.short_description }}
+							{{ display_post.short_description }}
 						</div>
 						<div id="tags_description">
-							[ {{ relevant_posts.0.tagnames }} ]
+							[ {{ display_post.tagnames }} ]
 						</div>
 						<div id="long_description">
-							{{ relevant_posts.0.long_description }}
+							{{ display_post.long_description }}
 						</div>
 
 						<div id="previous_comments">
-							{% for comment in relevant_posts.0.comments %}
+							{% for comment in display_post.comments %}
 							<div class="comment_box">
 								<table style="width: 100%;">
 									<tr>
 										<td class="comment_img_box">
 											<img class="comment_img" src={{comment.image}}?sz=50>
-											<span class="comment_name"> {{ relevant_posts.0.displayName }}</span>
+											<span class="comment_name"> {{ display_post.displayName }}</span>
 										</td>
 										<td>
 											<span class="comment_text">{{ comment.comment }}</span>
@@ -285,7 +297,7 @@
 
 						<form method="post" id="addCommentForm" action="addComment">
 							{% csrf_token %}
-							<input type="hidden" name="postID" value={{relevant_posts.0.id}}>
+							<input type="hidden" name="postID" value={{display_post.id}}>
 							<input type="hidden" name="userImage" value={{user.image}}>
 							<textarea class="ticket_comment" placeholder="Something to say?" name="comment" cols="25" rows="5"></textarea>
 							<br>
@@ -300,6 +312,15 @@
 		<a href="mailto:test@originate.com">questions? comments?</a>
 	</div>
 </body>
+
+{% if first_login %}
+<script type="text/javascript">
+	$( document ).ready(function() {
+		console.log("asdf");
+	   	$("#add_profile").click();
+	});
+</script>
+{% endif %}
 
 <!-- For Google Plus login -->
 <script type="text/javascript">

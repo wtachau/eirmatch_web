@@ -60,7 +60,7 @@ body {
 }
 
 .left_section {
-	max-height:calc(50% - 30px);
+	height:calc(50% - 30px);
 	position:relative;
 	overflow:auto;
 }
@@ -78,21 +78,24 @@ body {
 	font-size: 21px;
 }
 
-.skills {
+.section_header.skills, .skills .ticket_box  {
 	background-color: rgb(25,232,141);
 }
-.all {
+.section_header.all, .all .ticket_box {
 	background-color: rgb(115,210,226);;
 }
 
 .ticket_box {
 	height:95px;
-	background: #EDFDFF;
 	float: left;
 	width: 100%;
-	border-radius: 15px;
-	margin-bottom: 6px;
+	padding-bottom: 6px;
 	cursor:pointer;
+}
+
+.ticket_box table {
+	background: #EDFDFF;
+	border-radius: 15px;
 }
 
 .profilepic_small {
@@ -136,6 +139,19 @@ body {
 .speechbubble {
 	height: 33px;
 	margin-top:15px;
+}
+
+#no_skills_popup {
+	text-align: center;
+	margin-top: 20;
+}
+#profile_popup_link {
+	cursor: pointer;
+	color:gray;
+}
+
+#profile_popup_link:hover {
+	color:lightgray;
 }
 
 /* RIGHT PANEL */
