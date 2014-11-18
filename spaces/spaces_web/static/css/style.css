@@ -107,6 +107,7 @@ body {
 .ticket_left_half {
 	float:left;
 	padding: 6px;
+	width: 100%;
 	text-align: center;
 }
 
