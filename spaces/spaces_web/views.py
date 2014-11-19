@@ -8,7 +8,10 @@ from django.core import serializers
 
 # Return current user from cookie
 def getCurrentUser(request):
-	return User.objects.get(googleID=int(request.COOKIES['id']))
+	try:
+		return User.objects.get(googleID=int(request.COOKIES['id']))
+	except Exception as e:
+		print "Error getting current user: %s" % e
 
 def login(request):
 	context = {}
@@ -51,21 +54,26 @@ def home(request):
 		all_posts = getPostsInfo(user=None)
 		context['all_posts'] = all_posts
 		context['relevant_posts'] = relevant_posts
-		context['display_post'] = relevant_posts[0] if len(relevant_posts) > 0 else all_posts[0]
+		if all_posts:
+			context['display_post'] = relevant_posts[0] if len(relevant_posts) > 0 else all_posts[0]
 		context.update(csrf(request))
 
 		# if this is their first time logging in 
 		if ('first_login' in request.COOKIES):
 			context['first_login'] = True
-			response.delete_cookie('first_login')
 
 		# generate all tags (for posting suggestions)
 		context['tags'] = getAllTags(context['user'])
-		return render(request, 'index.html', context)
+		response =  render(request, 'index.html', context)
+		# make sure first login cookie is gone
+		if ('first_login' in request.COOKIES):
+			response.delete_cookie('first_login')
+		return response
+	
 
 	# if there was no user logged in
 	except Exception as e:
-		print e
+		print "Error in home login: %s" % e
 		return HttpResponseRedirect("login")
 	
 
