@@ -258,21 +258,28 @@
 			<td id="right_panel">
 				<div id="right_panel_fixed_height">
 					<div id="right_panel_content">
-						<div id="profilepic_box">
-							<img id="profilepic_big" src="{{ display_post.image }}">
-						</div>
-						<div id="contact_me">
-							<span id="contact_me_name">{{ display_post.poster }}</span><br>
-							<a href="mailto:{{ display_post.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a>
-
-						</div>
-
-						<div id="short_description">
-							{{ display_post.short_description }}
-						</div>
-						<div id="tags_description">
-							[ {{ display_post.tagnames }} ]
-						</div>
+						<table>
+							<tr>
+								<td id="about_me">
+									<div id="profilepic_box">
+										<img id="profilepic_big" src="{{ display_post.image }}">
+									</div>
+									<span id="contact_me_name">{{ display_post.poster }}</span>
+								</td>
+								<td id="header_desc">
+									<span id="short_description">{{ display_post.short_description }}</span>
+									<br><br>
+									<div id="tags_description">
+										[ {{ display_post.tagnames }} ]
+									</div>
+								</td>
+								<td id="contact_me">
+									<a href="mailto:{{ display_post.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a><br>
+									email me
+								</td>
+							</tr>
+						</table>
+						
 						<div id="long_description">
 							{{ display_post.long_description }}
 						</div>
@@ -309,7 +316,7 @@
 		</tr>
 	</table>
 	<div id="footer">
-		<a href="mailto:test@originate.com">questions? comments?</a>
+		<a href="mailto:william.tachau@originate.com">questions? comments?</a>
 	</div>
 </body>
 
@@ -321,6 +328,13 @@
 	});
 </script>
 {% endif %}
+
+<script type="text/javascript">
+	// To show comments for current ticket
+	$( document ).ready(function() {
+		//$(".ticket_box")[0].click()
+	});
+</script>
 
 <!-- For Google Plus login -->
 <script type="text/javascript">
