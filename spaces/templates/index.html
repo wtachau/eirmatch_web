@@ -47,7 +47,7 @@
             <br>
 
             <form name="postForm" id="postForm" action="addPost" method="POST">
-				<textarea name="short" id="short_description_popup" form="postForm" class="nonresize" placeholder="brief description"></textarea>
+				<textarea name="short" id="short_description_popup" form="postForm" class="nonresize" placeholder="your idea in 140 characters or less" maxlength="140"></textarea>
 				<br><br>
 				<!-- Tagging section. See http://brianreavis.github.io/selectize.js/ -->
 				<h3>choose several tags</h3>
@@ -74,7 +74,7 @@
 				<!-- End of tagging section -->
 				<br>	
 				<h3>more details:</h3>	
-				<textarea name="long" id="long_description_popup" form="postForm" class="nonresize" placeholder="more details"></textarea>
+				<textarea name="long" id="long_description_popup" form="postForm" class="nonresize" placeholder="more information"></textarea>
 				<br/><br>
 			
 				{% csrf_token %}
