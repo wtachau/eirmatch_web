@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^addComment$', views.addComment, name="addComment"),
     url(r'^getComments$', views.getComments, name="getComments"),
     url(r'^getRelevantTickets$', views.getRelevantTickets, name="getRelevantTickets"),
+    url(r'^getPostsByTag$', views.getPostsByTag, name="getPostsByTag"),
 
     # admin page
     url(r'^admin/', include(admin.site.urls)),

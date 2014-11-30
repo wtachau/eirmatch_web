@@ -1,3 +1,34 @@
+
+/* Functions to actually show or hide popup */
+	
+var popupStatus = 0;
+
+function loadPopup(popup) { 
+	if(popupStatus == 0) { 
+		//closeloading(); 
+		if (popup == "post") {
+			$("#postPopup").fadeIn(0500); 
+		} else if (popup == "profile") {
+			$("#profilePopup").fadeIn(0500); 
+		} else {
+			$("#tagPopup").fadeIn(0500); 
+		}
+		$("#backgroundPopup").css("opacity", "0.7");
+		$("#backgroundPopup").fadeIn(0001); 
+		popupStatus = 1;
+	}	
+}
+	
+function disablePopup() {
+	if(popupStatus == 1) {
+		$("#postPopup").fadeOut("normal");
+		$("#profilePopup").fadeOut("normal");  
+		$("#backgroundPopup").fadeOut("normal");  
+		$("#tagPopup").fadeOut("normal"); 
+		popupStatus = 0;
+	}
+}
+
 jQuery(function($) {
 
 	function makeAjaxRequest(form, event, onSuccess) {
@@ -86,12 +117,12 @@ jQuery(function($) {
 	$("#add_profile").click(function() {
 		loadPopup("profile");
 		return false;
-	})
+	});
 
 	$("#profile_popup_link").click(function() {
 		loadPopup("profile");
 		return false;
-	})
+	});
 
 	$(this).keyup(function(event) {
 		if (event.which == 27) { // 27 is 'Esc' 
@@ -103,32 +134,9 @@ jQuery(function($) {
 		disablePopup();
 	});
 
-	/* Functions to actually show or hide popup */
-	
-	var popupStatus = 0;
-	
-	function loadPopup(popup) { 
-		if(popupStatus == 0) { 
-			//closeloading(); 
-			if (popup == "post") {
-				$("#postPopup").fadeIn(0500); 
-			} else {
-				$("#profilePopup").fadeIn(0500); 
-			}
-			$("#backgroundPopup").css("opacity", "0.7");
-			$("#backgroundPopup").fadeIn(0001); 
-			popupStatus = 1;
-		}	
-	}
-		
-	function disablePopup() {
-		if(popupStatus == 1) {
-			$("#postPopup").fadeOut("normal");
-			$("#profilePopup").fadeOut("normal");  
-			$("#backgroundPopup").fadeOut("normal");  
-			popupStatus = 0;
-		}
-	}
+	$("#tagPopup").click(function() {
+		disablePopup();
+	});
 });
 
 /* Show tickets */
@@ -165,6 +173,9 @@ function showTicket(post) {
             alert("Error! Failed response from the server");
         }
     });
+
+    // //finally, hide popup if there is one 
+    // disablePopup();
 }
 
 function getRelevantTickets() {
@@ -176,8 +187,8 @@ function getRelevantTickets() {
         {
         	// remove previous tickets
 			$(".left_section.skills").find(".ticket_box").remove();
+
 			// add relevant ones
-			
 			jsonData = $.parseJSON(data);
         	// add comments
             $.each( jsonData, function( num, ticket ) {
@@ -216,6 +227,13 @@ function addCommentBox(userImage, userComment, userFirstName) {
 
 // Add ticket to the "most recent" pane
 function addTicket(htmlElement, ticket) { 
+
+	var tagText = "<div class='tags'>";
+
+	$.each( ticket['tags'], function( i, tag ) {
+	  tagText += "<span class='tag_link' onclick='showByTag(&quot;{{" + tag['id'] + "}}&quot;);'>"+ tag['name'] + "</span> ";
+	});
+
 	$(htmlElement).prepend("<div class='ticket-"+ticket['id']+" ticket_box' onclick='showTicket(&quot;"+ticket['id']+"&quot;);'>"+
 	        		"<table class='fade'>"+
 		        		"<tr>"+
@@ -236,9 +254,7 @@ function addTicket(htmlElement, ticket) {
 			        			"<span class='hidden_email' style='display:none'>"+
 			        				ticket['email']+
 			        			"</span>"+
-				        		"<div class='tags'>"+
-				        			ticket['tagnames']+
-				        		"</div>"+
+				        		tagText+
 			        		"</td>"+
 			        		"<td class='ticket_rightview'>"+
 			        			"<img class='speechbubble' src='" + ticket['staticURL'] + "img/speechbubble.png'>"+
@@ -247,5 +263,32 @@ function addTicket(htmlElement, ticket) {
 		        		"</tr>"+
 	        		"</table>"+
 	        	"</div>");
+	}
+
+function showByTag(tagID) {
+	loadPopup("tag");
+	$.ajax(
+    {
+        url : "getPostsByTag",
+        type: "GET",
+        data : {'tagID' : tagID},
+        success:function(data, textStatus, jqXHR) 
+        {
+        	// remove previous tickets
+			$("#tagPopup").find(".ticket_box").remove();
+
+			jsonData = $.parseJSON(data);
+        	// add comments
+            $.each( jsonData, function( num, ticket ) {
+			  addTicket("#tagPopup", ticket);
+			});
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+            alert("Error! Failed response from the server");
+        }
+    });
 }
+
+
 

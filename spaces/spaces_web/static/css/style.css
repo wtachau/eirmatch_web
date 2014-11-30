@@ -137,6 +137,10 @@ body {
 	top:1px;
 }
 
+.tag_link:hover {
+	text-decoration: underline;
+}
+
 .speechbubble {
 	height: 33px;
 	margin-top:15px;
@@ -153,6 +157,12 @@ body {
 
 #profile_popup_link:hover {
 	color:lightgray;
+}
+
+#tagPopup {
+	overflow: scroll;
+	max-height: 78%;
+	top: 13%;
 }
 
 /* RIGHT PANEL */

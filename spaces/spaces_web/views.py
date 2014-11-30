@@ -70,7 +70,6 @@ def home(request):
 			response.delete_cookie('first_login')
 		return response
 	
-
 	# if there was no user logged in
 	except Exception as e:
 		print "Error in home login: %s" % e
@@ -136,7 +135,7 @@ def getSinglePostInfo(post):
 				'image': post.poster.image,
 				'short_description': post.short_description,
 				'long_description': post.long_description,
-				'tagnames': " ".join(map(lambda tag: Tag.objects.get(id=tag).name, post.tags)),
+				'tags': map(lambda tag: {'id': Tag.objects.get(id=tag).id, 'name':Tag.objects.get(id=tag).name}, post.tags),
 				'staticURL': settings.STATIC_URL,
 				'poster': post.poster.name,
 				'displayName': post.poster.name.split(" ")[0],
@@ -214,5 +213,15 @@ def getComments(request):
 def getRelevantTickets(request):
 	print json.dumps(getPostsInfo(user=getCurrentUser(request)))
 	return HttpResponse(json.dumps(getPostsInfo(user=getCurrentUser(request))))
+
+def getPostsByTag(request):
+	tagID = request.GET.getlist('tagID')[0]
+	print tagID
+	relevantPosts = []
+	for post in Post.objects.all():
+		if tagID in post.tags:
+			relevantPosts.append(post)
+	relevantPostsJSON = map(lambda post: getSinglePostInfo(post), relevantPosts)
+	return HttpResponse(json.dumps(relevantPostsJSON))
 
 

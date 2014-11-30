@@ -143,6 +143,13 @@
    	<div id="backgroundPopup"></div>
    	<!-- end profile popup -->
 
+   	<!-- Add Tags popup -->
+	<div id="tagPopup" class="popup"> 
+		
+    
+    </div> 
+   	<!-- end tags popup -->
+
 	<table id="body_table">
 		<tr>
 			<td id="left_panel"> 
@@ -178,7 +185,9 @@
 					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
-						        			{{ post.tagnames }}
+						        			{% for tag in post.tags %}
+						        			<span class="tag_link" onclick="showByTag('{{tag.id}}');"> {{ tag.name }} </span>
+						        			{% endfor %}
 						        		</div>
 					        		</td>
 					        		<td class="ticket_rightview">
@@ -234,7 +243,9 @@
 					        				{{ post.email }}
 					        			</span>
 						        		<div class="tags">
-						        			{{ post.tagnames }}
+						        			{% for tag in post.tags %}
+						        			<span class="tag_link" onclick="showByTag('{{tag.id}}');"> {{ tag.name }} </span>
+						        			{% endfor %}
 						        		</div>
 					        		</td>
 					        		<td class="ticket_rightview">
