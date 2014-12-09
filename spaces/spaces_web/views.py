@@ -27,24 +27,37 @@ def tryLogin(request):
 	data = request.POST
 	googleID = data['id']
 	response = HttpResponse("success")
-	# Try to grab user from db if they exist
+	# Try to grab user from db if they have already logged in
 	try:
 		existingUser = User.objects.get(googleID=googleID)
 		response.set_cookie('id', existingUser.googleID)
-	# otherwise, since we know they are @originate.com, create user
 	except User.DoesNotExist:
-		email = data['emails[0][value]']
-		name = data['displayName']
-		image = data['result[image][url]'].split('?')[0]
-		newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
-		newUser.save()
-		response.set_cookie('id', newUser.googleID)
-		response.set_cookie('first_login', True)
+		try:
+			# otherwise, look for pre-created user to match
+			precreatedUser = User.objects.get(email=data['emails[0][value]'])
+			precreatedUser.name = data['displayName']
+			precreatedUser.image = data['result[image][url]'].split('?')[0]
+			precreatedUser.googleID=googleID
+			precreatedUser.save()
+			response.set_cookie('id', googleID)
+			response.set_cookie('first_login', True)
+
+		except Exception as e:
+			
+			print "Exception: %s (user not in database)" % e
+			# user is not in database at all
+			name = data['displayName']
+			image = data['result[image][url]'].split('?')[0]
+			newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
+			newUser.save()
+			response.set_cookie('id', newUser.googleID)
+			response.set_cookie('first_login', True)
 	except Exception as e:
-		print "Exception: %s" % e
+		print "Exception: %s (unexpected error)" % e
 	return response
 
 def home(request):
+
 	# See if there is a user logged in
 	try:	
 		context = {}
