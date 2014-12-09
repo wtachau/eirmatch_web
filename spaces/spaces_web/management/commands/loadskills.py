@@ -17,7 +17,9 @@ class Command(BaseCommand):
 			all_skills = []
 			for user in new_users.find():
 				# remember all user's skills
-				user_skills = map(lambda skill: skill['name'], user['skills'])
+				user_skills = []
+				if "skills" in user:
+					user_skills = map(lambda skill: skill['name'], user['skills'])
 				
 				# add all new skills to tag db, or update count of existing skill
 				tagIDs = []
