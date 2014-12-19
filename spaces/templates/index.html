@@ -8,6 +8,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"> </script>
+<script src="{% static 'js/jquery.cookie.js' %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 <script src="https://apis.google.com/js/client:plusone.js" type="text/javascript"></script>
 <script type="text/javascript" src="{% static 'js/popup.js' %}"></script>
@@ -15,6 +16,9 @@
 <!-- Selectize jQuery library for tagging -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/tagging/selectize.css' %}">
 <script type="text/javascript" src="{% static 'js/tagging/selectize.js' %}"></script>
+
+<!-- Set static URL variable for resources -->
+<script language="javascript">var STATIC_URL = "{{ STATIC_URL }}";</script>
 
 
 <script type="text/javascript">
@@ -290,6 +294,18 @@
 								</td>
 							</tr>
 						</table>
+
+						<table id="follow_link">
+							<tr>
+								<td>
+									<img src="{% static 'img/follow.png' %}">
+								</td>
+								<td>
+								  follow
+								</td>
+							</tr>
+						</table>
+
 						
 						<div id="long_description">
 							{{ display_post.long_description }}
@@ -334,16 +350,20 @@
 {% if first_login %}
 <script type="text/javascript">
 	$( document ).ready(function() {
-		console.log("asdf");
 	   	$("#add_profile").click();
 	});
 </script>
 {% endif %}
 
 <script type="text/javascript">
-	// To show comments for current ticket
+	// Load first relevant ticket into display
 	$( document ).ready(function() {
-		//$(".ticket_box")[0].click()
+		// If user has any relevant tickets
+		if ($(".left_section.skills .ticket_box").length > 0) {
+			$(".left_section.skills .ticket_box")[0].click()
+		} else {
+			$(".left_section.all .ticket_box")[0].click()
+		}
 	});
 </script>
 

@@ -59,7 +59,6 @@ jQuery(function($) {
 	// Submit post form to server
 	$("#postForm").submit(function(e)
 	{
-		
 		// make server call
 		var callback = function(data) {
 			jsonData = $.parseJSON(data);
@@ -151,12 +150,17 @@ function showTicket(post) {
 	$('#profilepic_big')[0].src = ticketSection.find('img')[0].src;
 	$("#contact_me_name").html(ticketSection.find('.ticket_description').find('.hidden_name')[0].innerHTML.trim());
 	$("#contact_me").find('a').attr('href', 'mailto:' + ticketSection.find('.ticket_description').find('.hidden_email')[0].innerHTML.trim());
+	$("#follow_link").attr("onclick","followTicket('"+post+"')");
 	// update submit form ID property so comments are added to correct Post
 	$("#addCommentForm").find('input[name=postID]').val(post);
 	// get comments from server
+	getCommentsForPost(post);
+}
+
+function getCommentsForPost(post) {
 	$.ajax(
     {
-        url : "getComments",
+        url : "getPostInfo",
         type: "GET",
         data: {'postID':post},
         success:function(data, textStatus, jqXHR) 
@@ -164,18 +168,17 @@ function showTicket(post) {
         	// remove previous comments
 			$(".comment_box").remove();
         	// add comments
-            $.each( data, function( num, comment ) {
+            $.each( data['comments'], function( num, comment ) {
 			  addCommentBox(comment['image'], comment['comment'], comment['userFirstName']);
 			});
+			// update "following" button
+			updateFollowButton(data['following']);
         },
         error: function(jqXHR, textStatus, errorThrown) 
         {
             alert("Error! Failed response from the server");
         }
     });
-
-    // //finally, hide popup if there is one 
-    // disablePopup();
 }
 
 function getRelevantTickets() {
@@ -231,7 +234,7 @@ function addTicket(htmlElement, ticket) {
 	var tagText = "<div class='tags'>";
 
 	$.each( ticket['tags'], function( i, tag ) {
-	  tagText += "<span class='tag_link' onclick='showByTag(&quot;{{" + tag['id'] + "}}&quot;);'>"+ tag['name'] + "</span> ";
+	  tagText += "<span class='tag_link' onclick='showByTag(&quot;" + tag['id'] + "&quot;);'>"+ tag['name'] + "</span> ";
 	});
 
 	$(htmlElement).prepend("<div class='ticket-"+ticket['id']+" ticket_box' onclick='showTicket(&quot;"+ticket['id']+"&quot;);'>"+
@@ -288,6 +291,41 @@ function showByTag(tagID) {
             alert("Error! Failed response from the server");
         }
     });
+}
+
+function followTicket(ticketID) {
+	// set to loading gif
+	$("#follow_link").find("img")[0].src=STATIC_URL+"img/spin.gif";
+	$.ajax(
+    {
+        url : "follow",
+        type: "POST",
+        data: {"csrfmiddlewaretoken":$.cookie('csrftoken'),
+        		"postID":ticketID},
+        success:function(data, textStatus, jqXHR) 
+        {
+        	// depending on whether user is following/unfollowing, change appearance
+        	$("#follow_link img").hide();
+        	updateFollowButton(data=="followed");
+            
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+        	$("#follow_link img").hide();
+        }
+    });
+}
+
+// Update the "Follow" button depending if the post is being followed or not
+function updateFollowButton(isFollowed) {
+	if (isFollowed) {
+		$("#follow_link img")[0].src=STATIC_URL+"img/ok.png"; 
+		$("#follow_link td")[1].innerHTML = "following"
+	} else {
+		$("#follow_link img")[0].src=STATIC_URL+"img/follow.png";
+		$("#follow_link td")[1].innerHTML = "follow" 
+	}
+	$("#follow_link img").fadeIn(0500);
 }
 
 

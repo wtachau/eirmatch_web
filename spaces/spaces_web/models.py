@@ -15,6 +15,7 @@ class User(models.Model):
 	googleID = models.CharField(max_length=255)
 	image = models.CharField(max_length=255)
 	relevant_tags = ListField(models.CharField(max_length=255))
+	following = ListField(models.CharField(max_length=255))
 
 	def __str__(self):
 		return self.name
@@ -29,6 +30,7 @@ class Post(models.Model):
 	poster = models.ForeignKey(User)
 	short_description = models.TextField()
 	long_description = models.TextField()
+	followers = ListField(models.CharField(max_length=255))
 	tags = ListField(models.CharField(max_length=255))
 	comments = ListField(EmbeddedModelField(Comment))
 	active = models.BooleanField(default=True)

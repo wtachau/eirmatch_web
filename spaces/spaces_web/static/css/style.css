@@ -222,6 +222,19 @@ body {
 	text-align: center;
 }
 
+#follow_link {
+	margin:auto;
+}
+
+#follow_link:hover {
+	text-decoration:underline; 
+	cursor: pointer;
+}
+
+#follow_link img {
+	width: 23px;
+}
+
 #short_description {
 	font-size: 20px;
 	padding: 15px;

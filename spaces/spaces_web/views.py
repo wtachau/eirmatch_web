@@ -43,15 +43,18 @@ def tryLogin(request):
 			response.set_cookie('first_login', True)
 
 		except Exception as e:
-			
-			print "Exception: %s (user not in database)" % e
-			# user is not in database at all
-			name = data['displayName']
-			image = data['result[image][url]'].split('?')[0]
-			newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
-			newUser.save()
-			response.set_cookie('id', newUser.googleID)
-			response.set_cookie('first_login', True)
+			try:
+				print "Exception: %s (user not in database)" % e
+				# user is not in database at all
+				name = data['displayName']
+				image = data['result[image][url]'].split('?')[0]
+				email = data['emails[0][value]']
+				newUser = User(name=name, email=email, googleID=googleID, image=image, relevant_tags=[])
+				newUser.save()
+				response.set_cookie('id', newUser.googleID)
+				response.set_cookie('first_login', True)
+			except Exception as e:
+				print e
 	except Exception as e:
 		print "Exception: %s (unexpected error)" % e
 	return response
@@ -77,6 +80,7 @@ def home(request):
 
 		# generate all tags (for posting suggestions)
 		context['tags'] = getAllTags(context['user'])
+		context['STATIC_URL'] = settings.STATIC_URL
 		response =  render(request, 'index.html', context)
 		# make sure first login cookie is gone
 		if ('first_login' in request.COOKIES):
@@ -115,7 +119,6 @@ def getPostsInfo(user):
 	userTags = []
 	if user:
 		userTags = user.relevant_tags
-
 	for post in posts:
 		isRelevant = False
 		postInfo = {}
@@ -206,21 +209,29 @@ def addComment(request):
 	except Exception as e:
 		return HttpResponse(e)
 
-# Get comments for a Post
-def getComments(request):
+# Get Info for a Post
+def getPostInfo(request):
 	data = request.GET
 
+	# fetch the Post Object and current User
 	postID = data.getlist('postID')[0]
-	comments = Post.objects.get(id=postID).comments
+	returnData = {}
 
-	returnData = []
+	# get post info (todo)
+
+	# is the user following this post?
+	returnData["following"] = postID in getCurrentUser(request).following
+	
+	# get all comments
+	returnComments = []
+	comments = Post.objects.get(id=postID).comments
 	for comment in comments:
 		commentData = { 'comment': comment.text,
 						'image': comment.user.image,
 						'userFirstName': comment.user.name.split(" ")[0] }
-		returnData.append(commentData)
+		returnComments.append(commentData)
+	returnData["comments"] = returnComments
 
-	# returnData = serializers.serialize('json', returnData)
 	return HttpResponse(json.dumps(returnData), mimetype="application/json")
 
 def getRelevantTickets(request):
@@ -229,6 +240,7 @@ def getRelevantTickets(request):
 
 def getPostsByTag(request):
 	tagID = request.GET.getlist('tagID')[0]
+	print request.GET
 	print tagID
 	relevantPosts = []
 	for post in Post.objects.all():
@@ -236,5 +248,17 @@ def getPostsByTag(request):
 			relevantPosts.append(post)
 	relevantPostsJSON = map(lambda post: getSinglePostInfo(post), relevantPosts)
 	return HttpResponse(json.dumps(relevantPostsJSON))
+def follow(request):
+	data = request.POST
+	user = getCurrentUser(request)
+	if data['postID'] in user.following:
+		user.following.remove(data['postID'])
+		user.save()
+		return HttpResponse("unfollowed")
+	else:
+		user.following.append(data['postID'])
+		user.save()
+		return HttpResponse("followed")
+	
 
 
