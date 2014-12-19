@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^updateTags$', views.updateTags, name="updateTags"),
     url(r'^addComment$', views.addComment, name="addComment"),
     url(r'^getPostInfo$', views.getPostInfo, name="getPostInfo"),
-    url(r'^getRelevantTickets$', views.getRelevantTickets, name="getRelevantTickets"),
+    url(r'^getAllTickets$', views.getAllTickets, name="getAllTickets"),
     url(r'^getPostsByTag$', views.getPostsByTag, name="getPostsByTag"),
     url(r'^follow$', views.follow, name="follow"),
 

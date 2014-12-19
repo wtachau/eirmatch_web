@@ -12,6 +12,7 @@ def getCurrentUser(request):
 		return User.objects.get(googleID=int(request.COOKIES['id']))
 	except Exception as e:
 		print "Error getting current user: %s" % e
+		return None
 
 def login(request):
 	context = {}
@@ -66,8 +67,8 @@ def home(request):
 		context = {}
 		context['user'] = getCurrentUser(request)
 		# get relevant posts and most recent
-		relevant_posts =  getPostsInfo(user=context['user'])
-		all_posts = getPostsInfo(user=None)
+		relevant_posts =  getPostsInfo(context['user'], True)
+		all_posts = getPostsInfo(context['user'], False)
 		context['all_posts'] = all_posts
 		context['relevant_posts'] = relevant_posts
 		if all_posts:
@@ -112,24 +113,27 @@ def getAllTags(user):
 
 # Gets information for Posts. 
 # If user is set, only include posts specific to that user.
-def getPostsInfo(user):
+# A post is relevant if it 1) has a tag specific to the user or 
+# 2) is being followed by that user
+def getPostsInfo(user, onlyRelevant):
 	posts = Post.objects.all().order_by('date_updated').reverse()
 	postsInfo = []
 
 	userTags = []
-	if user:
+	if onlyRelevant:
 		userTags = user.relevant_tags
 	for post in posts:
-		isRelevant = False
 		postInfo = {}
+		# if it is being followed by user
+		isRelevant = post.id in user.following
 		# get tag names from ids
 		tagnames = " ".join(map(lambda tagID: Tag.objects.get(id=tagID).name, post.tags))
 		# see if there are any user tags in the post
 		if len(filter(lambda x: x in userTags, post.tags)) > 0:
 			isRelevant = True
 		# if we're grabbing all posts or is relevant
-		if not user or isRelevant:
-			postsInfo.append(getSinglePostInfo(post))
+		if not onlyRelevant or isRelevant:
+			postsInfo.append(getSinglePostInfo(post, user))
 	return postsInfo
 
 # Receives Ajax request for a new Post.
@@ -141,12 +145,12 @@ def addPost(request):
 	try:
 		post = Post(poster=getCurrentUser(request), short_description=shortDesc, long_description=longDesc, tags=tagIDs, comments=[])
 		post.save()
-		return HttpResponse(json.dumps(getSinglePostInfo(post)))
+		return HttpResponse(json.dumps(getSinglePostInfo(post, getCurrentUser(request))))
 	except Exception as e:
 		return HttpResponse(" error: %s"%e)
 
 # Get a view-friendly version of the Post info we need
-def getSinglePostInfo(post):
+def getSinglePostInfo(post, user):
 	return {	'id':post.id,
 				'image': post.poster.image,
 				'short_description': post.short_description,
@@ -156,6 +160,7 @@ def getSinglePostInfo(post):
 				'poster': post.poster.name,
 				'displayName': post.poster.name.split(" ")[0],
 				'email': post.poster.email,
+				'isFollowed': post.id in user.following,
 				'numComments': len(post.comments)
 			}
 
@@ -234,20 +239,22 @@ def getPostInfo(request):
 
 	return HttpResponse(json.dumps(returnData), mimetype="application/json")
 
-def getRelevantTickets(request):
-	print json.dumps(getPostsInfo(user=getCurrentUser(request)))
-	return HttpResponse(json.dumps(getPostsInfo(user=getCurrentUser(request))))
+def getAllTickets(request):
+	#need to cast from javascript boolean, which is just a string
+	onlyRelevant = request.GET.getlist('onlyRelevant')[0] == 'true'
+	return HttpResponse(json.dumps(getPostsInfo(getCurrentUser(request), onlyRelevant)))
 
 def getPostsByTag(request):
 	tagID = request.GET.getlist('tagID')[0]
-	print request.GET
-	print tagID
+	returnData = {"tagName": Tag.objects.get(id=tagID).name }
 	relevantPosts = []
 	for post in Post.objects.all():
 		if tagID in post.tags:
 			relevantPosts.append(post)
-	relevantPostsJSON = map(lambda post: getSinglePostInfo(post), relevantPosts)
-	return HttpResponse(json.dumps(relevantPostsJSON))
+	relevantPostsJSON = map(lambda post: getSinglePostInfo(post, getCurrentUser(request)), relevantPosts)
+	returnData['posts'] = relevantPostsJSON
+	return HttpResponse(json.dumps(returnData))
+
 def follow(request):
 	data = request.POST
 	user = getCurrentUser(request)

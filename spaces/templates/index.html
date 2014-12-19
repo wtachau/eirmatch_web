@@ -63,7 +63,7 @@
 				</select>
 				</div>
 				<script>
-				$('#select-tag').selectize({
+				var $selectize_control = $('#select-tag').selectize({
 					maxItems: 5,
 					delimiter: ',',
 				    persist: false,
@@ -149,8 +149,8 @@
 
    	<!-- Add Tags popup -->
 	<div id="tagPopup" class="popup"> 
-		
-    
+	<div id="tagsTitle">posts related to "<span></span>"</div>
+    <div id="tagsList"></div>
     </div> 
    	<!-- end tags popup -->
 
@@ -161,50 +161,12 @@
 				<!-- Relevant Posts -->
 
 				<div class="section_header skills">
-					<div>in your skill set</div>
+					<div>relevant to you</div>
 				</div>
 				<div class="left_section skills">
 			        <div class="overflow_section" id="relevant_posts">
-			        	
-			        	{% for post in relevant_posts %}
 
-			        	<div class="ticket-{{post.id}} ticket_box" onclick="showTicket('{{post.id}}');" >
-			        		<table class="fade">
-				        		<tr>
-					        		<td class="ticket_left_half">
-						        		<img class="profilepic_small" src="{{ post.image }}"><br>
-						        		<span id="ticket_name">{{ post.displayName}}</span>
-					        		</td>
-					        		<td class="ticket_description">
-					        			<span class="description">
-					        				{{ post.short_description }}
-					        			</span>
-					        			<span class="hidden_description" style="display:none">
-					        				{{post.long_description }}
-					        			</span>
-					        			<span class="hidden_name" style="display:none">
-					        				{{ post.poster }}
-					        			</span>
-					        			<span class="hidden_email" style="display:none">
-					        				{{ post.email }}
-					        			</span>
-						        		<div class="tags">
-						        			{% for tag in post.tags %}
-						        			<span class="tag_link" onclick="showByTag('{{tag.id}}');"> {{ tag.name }} </span>
-						        			{% endfor %}
-						        		</div>
-					        		</td>
-					        		<td class="ticket_rightview">
-					        			<img class="speechbubble" src="{% static 'img/speechbubble.png' %}">
-					        			<div class="num_comments">
-						        			{{ post.numComments }}
-					        			</div>
-					        		</td>
-				        		</tr>
-			        		</table>
-			        	</div>
-
-			        	{% endfor %}
+			        	<!-- Posts are inserted here dynamically -->
 
 			        	<div id="no_skills_popup"
 				        	{% if relevant_posts|length > 0 %} style="display:none;" 
@@ -224,45 +186,7 @@
 				<div class="left_section all">
 			        <div class="overflow_section" id="all_posts">
 			        	
-			        	{% for post in all_posts %}
-
-			        	<div class="ticket-{{post.id}} ticket_box" onclick="showTicket('{{post.id}}');">
-			        		<table class="fade">
-				        		<tr>
-					        		<td class="ticket_left_half">
-						        		<img class="profilepic_small" src="{{ post.image }}"><br>
-						        		<span id="ticket_name">{{ post.displayName}}</span>
-					        		</td>
-					        		<td class="ticket_description">
-					        			<span class="description">
-					        				{{ post.short_description }}
-					        			</span>
-					        			<span class="hidden_description" style="display:none">
-					        				{{post.long_description }}
-					        			</span>
-					        			<span class="hidden_name" style="display:none">
-					        				{{ post.poster }}
-					        			</span>
-					        			<span class="hidden_email" style="display:none">
-					        				{{ post.email }}
-					        			</span>
-						        		<div class="tags">
-						        			{% for tag in post.tags %}
-						        			<span class="tag_link" onclick="showByTag('{{tag.id}}');"> {{ tag.name }} </span>
-						        			{% endfor %}
-						        		</div>
-					        		</td>
-					        		<td class="ticket_rightview">
-					        			<img class="speechbubble" src="{% static 'img/speechbubble.png' %}">
-					        			<div class="num_comments">
-						        			{{ post.numComments }}
-					        			</div>
-					        		</td>
-				        		</tr>
-			        		</table>
-			        	</div>
-
-			        	{% endfor %}
+			        	<!-- All Posts inserted dynamically -->
 
 			        </div>
 				</div>
@@ -291,21 +215,19 @@
 								<td id="contact_me">
 									<a href="mailto:{{ display_post.email }}"><img id="email_img" src="{% static 'img/packet.png' %}"></a><br>
 									email me
+									<table id="follow_link">
+										<tr>
+											<td>
+												<img src="{% static 'img/follow.png' %}">
+											</td>
+											<td>
+											  follow
+											</td>
+										</tr>
+									</table>
 								</td>
 							</tr>
 						</table>
-
-						<table id="follow_link">
-							<tr>
-								<td>
-									<img src="{% static 'img/follow.png' %}">
-								</td>
-								<td>
-								  follow
-								</td>
-							</tr>
-						</table>
-
 						
 						<div id="long_description">
 							{{ display_post.long_description }}
@@ -358,12 +280,18 @@
 <script type="text/javascript">
 	// Load first relevant ticket into display
 	$( document ).ready(function() {
-		// If user has any relevant tickets
-		if ($(".left_section.skills .ticket_box").length > 0) {
-			$(".left_section.skills .ticket_box")[0].click()
-		} else {
-			$(".left_section.all .ticket_box")[0].click()
-		}
+		var selectFirstRelevantTicket = function() {
+			// If user has any relevant tickets
+			if ($(".left_section.skills .ticket_box").length > 0) {
+				$(".left_section.skills .ticket_box")[0].click()
+			} else {
+				$(".left_section.all .ticket_box")[0].click()
+			}
+		};
+		// get only relevant tickets
+		getAllTickets(true, selectFirstRelevantTicket);
+		// get all tickets
+		getAllTickets(false, selectFirstRelevantTicket);
 	});
 </script>
 

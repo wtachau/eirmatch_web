@@ -122,6 +122,13 @@ body {
 	text-align: right;
 }
 
+.ticket_rightview.follow {
+	min-width: 27px;
+}
+.ticket_rightview.follow img {
+	width: 23px;
+}
+
 .num_comments {
 	top: -26px;
 	font-size: 14px;
@@ -223,7 +230,10 @@ body {
 }
 
 #follow_link {
-	margin:auto;
+	float: right;
+	margin-right: 29px;
+	margin-top: 10px;
+	font-size: 14px;
 }
 
 #follow_link:hover {
@@ -232,7 +242,7 @@ body {
 }
 
 #follow_link img {
-	width: 23px;
+	width: 19px;
 }
 
 #short_description {
@@ -393,6 +403,13 @@ input[type="submit"]:focus {
 }
 #logout {
 	cursor: pointer;
+}
+
+/* Tags Popup */
+#tagsTitle {
+	text-align: center;
+	padding: 10px;
+	font-weight: bold;
 }
 
 /* Login */

@@ -66,7 +66,7 @@ jQuery(function($) {
 			// then clear forms
 			$("#postForm").find('textarea[name=short]')[0].value = "";
 			$("#postForm").find('textarea[name=long]')[0].value = "";
-			$("#tag-selector-wrapper").find('div[data-value]').filter(function(i, e) { return $(e).attr("class") == "item"; }).remove();
+			$("#select-tag")[0].selectize.clear();
 		}
 		makeAjaxRequest(this, e, callback);
 	});
@@ -74,8 +74,9 @@ jQuery(function($) {
 	// update tags 
 	$("#updateTagsForm").submit(function(e)
 	{
-		makeAjaxRequest(this, e, null);	
-		getRelevantTickets();
+		makeAjaxRequest(this, e, function(x) {
+			getAllTickets(true)
+		});	
 	});
 
 	$("#addCommentForm").keypress(function(event) {
@@ -181,28 +182,34 @@ function getCommentsForPost(post) {
     });
 }
 
-function getRelevantTickets() {
+function getAllTickets(onlyRelevant, callback) {
 	$.ajax(
     {
-        url : "getRelevantTickets",
+        url : "getAllTickets",
         type: "GET",
+        data: {"onlyRelevant":(onlyRelevant==true)},
         success:function(data, textStatus, jqXHR) 
         {
+        	var section = onlyRelevant ? "skills" : "all";
+        	var sectionID = onlyRelevant ? "#relevant_posts" : "#all_posts";
         	// remove previous tickets
-			$(".left_section.skills").find(".ticket_box").remove();
+			$(".left_section."+section).find(".ticket_box").remove();
 
 			// add relevant ones
 			jsonData = $.parseJSON(data);
         	// add comments
             $.each( jsonData, function( num, ticket ) {
-			  addTicket("#relevant_posts", ticket);
+			  addTicket(sectionID, ticket);
 			});
 			//remove text for no relevant skills
-			if (jsonData.length > 0) {
-				$("#no_skills_popup").hide();
-			} else {
-				$("#no_skills_popup").show();
+			if (onlyRelevant) {
+				if (jsonData.length > 0) {
+					$("#no_skills_popup").hide();
+				} else {
+					$("#no_skills_popup").show();
+				}
 			}
+			if (callback) callback();
         },
         error: function(jqXHR, textStatus, errorThrown) 
         {
@@ -232,7 +239,6 @@ function addCommentBox(userImage, userComment, userFirstName) {
 function addTicket(htmlElement, ticket) { 
 
 	var tagText = "<div class='tags'>";
-
 	$.each( ticket['tags'], function( i, tag ) {
 	  tagText += "<span class='tag_link' onclick='showByTag(&quot;" + tag['id'] + "&quot;);'>"+ tag['name'] + "</span> ";
 	});
@@ -259,6 +265,9 @@ function addTicket(htmlElement, ticket) {
 			        			"</span>"+
 				        		tagText+
 			        		"</td>"+
+			        		"<td class='ticket_rightview follow'>"+
+			        			"<img "+ (ticket['isFollowed'] ? "" : "style='display:none;' ") + " src='" + ticket['staticURL'] + "img/followcheck.png'>"+
+			        		"</td>"+
 			        		"<td class='ticket_rightview'>"+
 			        			"<img class='speechbubble' src='" + ticket['staticURL'] + "img/speechbubble.png'>"+
 			        			"<div class='num_comments'>0</div>"+
@@ -279,11 +288,11 @@ function showByTag(tagID) {
         {
         	// remove previous tickets
 			$("#tagPopup").find(".ticket_box").remove();
-
 			jsonData = $.parseJSON(data);
+			$("#tagsTitle span").html(jsonData['tagName'])
         	// add comments
-            $.each( jsonData, function( num, ticket ) {
-			  addTicket("#tagPopup", ticket);
+            $.each( jsonData['posts'], function( num, ticket ) {
+			  addTicket("#tagsList", ticket);
 			});
         },
         error: function(jqXHR, textStatus, errorThrown) 
@@ -296,6 +305,18 @@ function showByTag(tagID) {
 function followTicket(ticketID) {
 	// set to loading gif
 	$("#follow_link").find("img")[0].src=STATIC_URL+"img/spin.gif";
+
+	// Update follow icons immediately
+	var followIcon = $(".ticket-"+ticketID+ " .ticket_rightview.follow img"); 
+	$.map($(followIcon), 
+		function(val, i) {
+			if($(val).css('display') == 'none') {
+				$(val).css('display', 'inline');
+			} else {
+				$(val).css('display', 'none');
+			}
+		});
+	// Now actually update server
 	$.ajax(
     {
         url : "follow",
@@ -326,6 +347,7 @@ function updateFollowButton(isFollowed) {
 		$("#follow_link td")[1].innerHTML = "follow" 
 	}
 	$("#follow_link img").fadeIn(0500);
+	getAllTickets(true);
 }
 
 
